@@ -9,21 +9,25 @@
 /* Begin PBXBuildFile section */
 		64BAAEA7243865CA00AE3351 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BAAEA6243865CA00AE3351 /* AppDelegate.swift */; };
 		64BAAEA9243865CA00AE3351 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BAAEA8243865CA00AE3351 /* SceneDelegate.swift */; };
-		64BAAEAB243865CA00AE3351 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BAAEAA243865CA00AE3351 /* ViewController.swift */; };
 		64BAAEAE243865CA00AE3351 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 64BAAEAC243865CA00AE3351 /* Main.storyboard */; };
 		64BAAEB0243865CC00AE3351 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 64BAAEAF243865CC00AE3351 /* Assets.xcassets */; };
 		64BAAEB3243865CC00AE3351 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 64BAAEB1243865CC00AE3351 /* LaunchScreen.storyboard */; };
+		64BAAEBB2438665200AE3351 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BAAEBA2438665200AE3351 /* MapViewController.swift */; };
+		64BAAEBD2438698300AE3351 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BAAEBC2438698300AE3351 /* Model.swift */; };
+		64BAAEBF243869AD00AE3351 /* NetworkController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BAAEBE243869AD00AE3351 /* NetworkController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		64BAAEA3243865CA00AE3351 /* Co-Alarm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Co-Alarm.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		64BAAEA6243865CA00AE3351 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		64BAAEA8243865CA00AE3351 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		64BAAEAA243865CA00AE3351 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		64BAAEAD243865CA00AE3351 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		64BAAEAF243865CC00AE3351 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		64BAAEB2243865CC00AE3351 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		64BAAEB4243865CC00AE3351 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		64BAAEBA2438665200AE3351 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		64BAAEBC2438698300AE3351 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		64BAAEBE243869AD00AE3351 /* NetworkController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,8 +62,10 @@
 			children = (
 				64BAAEA6243865CA00AE3351 /* AppDelegate.swift */,
 				64BAAEA8243865CA00AE3351 /* SceneDelegate.swift */,
-				64BAAEAA243865CA00AE3351 /* ViewController.swift */,
 				64BAAEAC243865CA00AE3351 /* Main.storyboard */,
+				64BAAEBA2438665200AE3351 /* MapViewController.swift */,
+				64BAAEBC2438698300AE3351 /* Model.swift */,
+				64BAAEBE243869AD00AE3351 /* NetworkController.swift */,
 				64BAAEAF243865CC00AE3351 /* Assets.xcassets */,
 				64BAAEB1243865CC00AE3351 /* LaunchScreen.storyboard */,
 				64BAAEB4243865CC00AE3351 /* Info.plist */,
@@ -138,9 +144,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				64BAAEAB243865CA00AE3351 /* ViewController.swift in Sources */,
+				64BAAEBF243869AD00AE3351 /* NetworkController.swift in Sources */,
 				64BAAEA7243865CA00AE3351 /* AppDelegate.swift in Sources */,
+				64BAAEBB2438665200AE3351 /* MapViewController.swift in Sources */,
 				64BAAEA9243865CA00AE3351 /* SceneDelegate.swift in Sources */,
+				64BAAEBD2438698300AE3351 /* Model.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,7 +224,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -270,7 +278,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
