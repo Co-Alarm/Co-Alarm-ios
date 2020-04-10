@@ -2,12 +2,12 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "search (1).png",
+      "filename" : "search.pdf",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "search (2).png",
+      "filename" : "search-_1_.pdf",
       "appearances" : [
         {
           "appearance" : "luminosity",
@@ -48,5 +48,8 @@
   "info" : {
     "version" : 1,
     "author" : "xcode"
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
   }
 }

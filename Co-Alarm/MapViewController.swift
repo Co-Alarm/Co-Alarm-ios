@@ -143,6 +143,7 @@ extension MapViewController: MKMapViewDelegate {
             default:
                 break
             }
+            
             return annotationView
         } else {
             return nil
