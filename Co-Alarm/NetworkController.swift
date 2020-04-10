@@ -15,6 +15,7 @@ class NetworkController {
     let storeBaseURL = URL(string: "https://8oi9s0nnth.apigw.ntruss.com/corona19-masks/v1")!
     let geoCodeBaseURL = URL(string: "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode")!
     
+    //마스크 판매 현황 api와 통신하여 데이터를 fetch하는 함수
     func fetchStores(lat: Double, lng: Double, delta: Int, completion: @escaping ([Store]?)->Void) {
         let initialStoresURL = storeBaseURL.appendingPathComponent("storesByGeo").appendingPathComponent("json")
         var components = URLComponents(url: initialStoresURL, resolvingAgainstBaseURL: true)!
@@ -30,7 +31,7 @@ class NetworkController {
         }
         task.resume()
     }
-    
+    //geocode api와 통신하여 데이터를 fetch하는 함수
     func fetchGeoCode(addr: String, completion: @escaping (Address?) -> Void) {
         var components = URLComponents(url: geoCodeBaseURL, resolvingAgainstBaseURL: true)!
         components.queryItems = [URLQueryItem(name: "query", value: addr)]

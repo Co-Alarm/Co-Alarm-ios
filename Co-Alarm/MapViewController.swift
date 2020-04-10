@@ -12,18 +12,24 @@ import MapKit
 class MapViewController: UIViewController {
     
     let locationManager = CLLocationManager()
+    var searchTextFieldIsHidden = true
 
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var searchTextField: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        locationManager.delegate = self
+        searchTextField.isHidden = searchTextFieldIsHidden
+        searchTextField.delegate = self
+        searchTextField.returnKeyType = .search
         mapView.delegate = self
+        locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
     }
     
+    //mapView의 region을 현위치로 설정하는 함수
     func myLocation(lat: CLLocationDegrees, lng: CLLocationDegrees, delta: Double) {
         let coordinateLocation = CLLocationCoordinate2DMake(lat, lng)
         let spanValue = MKCoordinateSpan(latitudeDelta: delta, longitudeDelta: delta)
@@ -31,6 +37,7 @@ class MapViewController: UIViewController {
         mapView.setRegion(locationRegion, animated: true)
     }
     
+    //약국을 mapView에 나타내는 함수
     func presentStores(lat: Double, lng: Double) {
         DispatchQueue.main.async {
             for annotation in self.mapView.annotations {
@@ -57,6 +64,7 @@ class MapViewController: UIViewController {
         }
     }
     
+    //mapView에 annotation을 추가하는 함수
     func setAnnotation(lat: CLLocationDegrees, lng: CLLocationDegrees, name: String, remain: String) {
         let annotation = MKPointAnnotation()
         annotation.coordinate.latitude = lat
@@ -80,9 +88,32 @@ class MapViewController: UIViewController {
         }
         mapView.addAnnotation(annotation)
     }
+    
+    @IBAction func searchButtonTapped(_ sender: Any) {
+        if searchTextFieldIsHidden {
+            self.searchTextField.alpha = 0.0
+            self.searchTextField.isHidden = false
+            searchTextFieldIsHidden = false
+            
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {self.searchTextField.alpha = 1.0}) { (isCompleted) in
+            }
+        } else {
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {self.searchTextField.alpha = 0.0}) { (isCompleted) in
+                self.searchTextField.isHidden = true
+                self.searchTextFieldIsHidden = true
+            }
+        }
+    }
+    
+    @IBAction func refreshButtonTapped(_ sender: Any) {
+        searchTextField.text = ""
+        self.locationManager.startUpdatingLocation()
+    }
 }
 
+
 extension MapViewController: CLLocationManagerDelegate {
+    //현위치가 업데이트 되면 실행하는 CLLocationManagerDelegate 함수
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let lastLocation = locations.last
         let lat = (lastLocation?.coordinate.latitude)!, lng = (lastLocation?.coordinate.longitude)!
@@ -91,6 +122,7 @@ extension MapViewController: CLLocationManagerDelegate {
 }
 
 extension MapViewController: MKMapViewDelegate {
+    //custom annotationView를 생성하는 MKMapViewDelegate 함수
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "anno") ?? MKAnnotationView(annotation: annotation, reuseIdentifier: "anno")
         annotationView.canShowCallout = true
@@ -116,4 +148,33 @@ extension MapViewController: MKMapViewDelegate {
             return nil
         }
     }
+}
+
+
+extension MapViewController: UITextFieldDelegate {
+    //searchTextField에서 return 키가 눌러졌을 때 실행하는 UITextFieldDelegate 함수
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if let addr = textField.text, addr != "" {
+            NetworkController.sharedInstance.fetchGeoCode(addr: addr) { (addr) in
+                if let addr = addr {
+                    print(Double(addr.y)!)
+                    print(Double(addr.x)!)
+                    DispatchQueue.main.async {
+                        self.presentStores(lat: Double(addr.y)!, lng:  Double(addr.x)!)
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        let geocodeErrorAlert = UIAlertController(title: "오류", message: "지역명이 잘못되었습니다.", preferredStyle: .alert)
+                        geocodeErrorAlert.addAction(UIAlertAction(title: "확인", style: .default))
+                        self.present(geocodeErrorAlert, animated: true, completion: nil)
+                        print("parsing geocode error")
+                    }
+                }
+            }
+        }
+        textField.text = ""
+        self.view.endEditing(true)
+        return true
+    }
+
 }
