@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SafariServices
 
 class NewsTableViewController: UITableViewController {
 
@@ -42,9 +43,9 @@ class NewsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if let url = URL(string: self.articles[indexPath.row].link) {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        }
+        guard let url = URL(string: self.articles[indexPath.row].link) else {return}
+        let safariViewController = SFSafariViewController(url: url)
+        present(safariViewController, animated: true, completion: nil)
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
