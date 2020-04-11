@@ -36,3 +36,15 @@ struct Address: Codable {
 struct GeoCode: Codable {
     let addresses: [Address]
 }
+
+struct Article: Codable {
+    let title: String
+    let link: String
+    let description: String
+}
+
+struct News: Codable {
+    let total: Int
+    let start: Int
+    let items: [Article]
+}

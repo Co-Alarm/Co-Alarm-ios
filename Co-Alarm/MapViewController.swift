@@ -53,9 +53,9 @@ class MapViewController: UIViewController {
                     }
                 }
             } else {
+                let storeErrorAlert = UIAlertController(title:"오류", message: "약국 데이터 수집 오류", preferredStyle: .alert)
+                storeErrorAlert.addAction(UIAlertAction(title: "확인", style: .default))
                 DispatchQueue.main.async {
-                    let storeErrorAlert = UIAlertController(title:"오류", message: "약국 데이터 수집 오류", preferredStyle: .alert)
-                    storeErrorAlert.addAction(UIAlertAction(title: "확인", style: .default))
                     self.present(storeErrorAlert, animated: true, completion: nil)
                     print("parsing store error")
                 }
@@ -164,9 +164,9 @@ extension MapViewController: UITextFieldDelegate {
                         self.presentStores(lat: Double(addr.y)!, lng:  Double(addr.x)!)
                     }
                 } else {
+                    let geocodeErrorAlert = UIAlertController(title: "오류", message: "지역명이 잘못되었습니다.", preferredStyle: .alert)
+                    geocodeErrorAlert.addAction(UIAlertAction(title: "확인", style: .default))
                     DispatchQueue.main.async {
-                        let geocodeErrorAlert = UIAlertController(title: "오류", message: "지역명이 잘못되었습니다.", preferredStyle: .alert)
-                        geocodeErrorAlert.addAction(UIAlertAction(title: "확인", style: .default))
                         self.present(geocodeErrorAlert, animated: true, completion: nil)
                         print("parsing geocode error")
                     }
