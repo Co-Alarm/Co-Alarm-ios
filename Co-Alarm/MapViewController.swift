@@ -109,6 +109,9 @@ class MapViewController: UIViewController {
         searchTextField.text = ""
         self.locationManager.startUpdatingLocation()
     }
+    @IBAction func researchButtonTapped(_ sender: Any) {
+        self.presentStores(lat: mapView.centerCoordinate.latitude, lng: mapView.centerCoordinate.longitude)
+    }
 }
 
 

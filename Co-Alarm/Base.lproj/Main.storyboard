@@ -49,13 +49,23 @@
                                     <action selector="searchButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="dNG-12-Wke"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="31H-FI-aTG">
+                                <rect key="frame" x="151" y="132" width="112" height="30"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
+                                <state key="normal" title="이 지역에서 재검색"/>
+                                <connections>
+                                    <action selector="researchButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="STL-Fo-09N"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="b7u-NT-sl3" secondAttribute="trailing" constant="20" id="Azn-VA-jvk"/>
+                            <constraint firstItem="31H-FI-aTG" firstAttribute="top" secondItem="2p7-2p-cOZ" secondAttribute="bottom" constant="8" id="F2w-m8-BCd"/>
                             <constraint firstItem="qB4-sp-v8y" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="40" id="MNP-yz-ECt"/>
                             <constraint firstItem="2p7-2p-cOZ" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="30" id="bKJ-3r-Nss"/>
                             <constraint firstItem="b7u-NT-sl3" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="40" id="l0a-Z3-jwZ"/>
+                            <constraint firstItem="31H-FI-aTG" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="n9l-Zv-lw6"/>
                             <constraint firstItem="b7u-NT-sl3" firstAttribute="leading" secondItem="2p7-2p-cOZ" secondAttribute="trailing" constant="10" id="pG4-1a-kn9"/>
                             <constraint firstItem="qB4-sp-v8y" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="sAf-lH-wN7"/>
                             <constraint firstItem="2p7-2p-cOZ" firstAttribute="leading" secondItem="qB4-sp-v8y" secondAttribute="trailing" constant="10" id="zO0-l1-Qe0"/>
@@ -107,6 +117,7 @@
                 <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="V0o-gY-L7P" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="7NP-i3-opS">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>

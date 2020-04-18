@@ -18,8 +18,6 @@ class NetworkController {
     
     //마스크 판매 현황 api와 통신하여 데이터를 fetch하는 함수
     func fetchStores(lat: Double, lng: Double, delta: Int, completion: @escaping ([Store]?)->Void) {
-        print(lat)
-        print(lng)
         let initialStoresURL = storeBaseURL.appendingPathComponent("storesByGeo").appendingPathComponent("json")
         var components = URLComponents(url: initialStoresURL, resolvingAgainstBaseURL: true)!
         components.queryItems = [URLQueryItem(name: "lat", value: "\(lat)"), URLQueryItem(name: "lng", value: "\(lng)"), URLQueryItem(name: "delta", value: "\(delta)")]
