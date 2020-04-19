@@ -14,12 +14,14 @@ struct Store: Codable {
     let lng: Double
     let stockAt: String?
     let remain: String?
+    let createdAt: String?
     enum CodingKeys: String, CodingKey {
         case name
         case lat
         case lng
         case stockAt = "stock_at"
         case remain = "remain_stat"
+        case createdAt = "created_at"
     }
 }
 

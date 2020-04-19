@@ -128,7 +128,9 @@ extension MapViewController: MKMapViewDelegate {
     //custom annotationView를 생성하는 MKMapViewDelegate 함수
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "anno") ?? MKAnnotationView(annotation: annotation, reuseIdentifier: "anno")
+        let rightButton = UIButton(type: .contactAdd)
         annotationView.canShowCallout = true
+        annotationView.rightCalloutAccessoryView = rightButton
         if annotation is MKUserLocation {
             return nil
         } else if annotation is MKPointAnnotation{
@@ -150,6 +152,22 @@ extension MapViewController: MKMapViewDelegate {
             return annotationView
         } else {
             return nil
+        }
+    }
+    
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        let anno = view.annotation!
+        let bookmarkStore = Store(name: anno.title!!, lat: anno.coordinate.latitude, lng: anno.coordinate.longitude, stockAt: nil, remain: nil, createdAt: nil)
+        
+        if var alreadyExist = FileController.loadBookmarkedStores() {
+            let hadSame = alreadyExist.contains{$0.name == bookmarkStore.name}
+            if !hadSame {
+                alreadyExist.append(bookmarkStore)
+                FileController.saveBookmarkedStores(alreadyExist)
+            }
+        } else {
+            let newBookmarkStores = [bookmarkStore]
+            FileController.saveBookmarkedStores(newBookmarkStores)
         }
     }
 }
