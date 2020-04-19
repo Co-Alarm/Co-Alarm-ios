@@ -88,7 +88,7 @@ class MapViewController: UIViewController {
         }
         mapView.addAnnotation(annotation)
     }
-    
+    //검색 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func searchButtonTapped(_ sender: Any) {
         if searchTextFieldIsHidden {
             self.searchTextField.alpha = 0.0
@@ -104,11 +104,12 @@ class MapViewController: UIViewController {
             }
         }
     }
-    
+    //새로고침 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func refreshButtonTapped(_ sender: Any) {
         searchTextField.text = ""
         self.locationManager.startUpdatingLocation()
     }
+    //이 지역에서 재검색 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func researchButtonTapped(_ sender: Any) {
         self.presentStores(lat: mapView.centerCoordinate.latitude, lng: mapView.centerCoordinate.longitude)
     }
@@ -154,7 +155,7 @@ extension MapViewController: MKMapViewDelegate {
             return nil
         }
     }
-    
+    //annotationView안의 버튼이 눌러졌을 때 실행되는 함수
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         let anno = view.annotation!
         let bookmarkStore = Store(name: anno.title!!, lat: anno.coordinate.latitude, lng: anno.coordinate.longitude, stockAt: nil, remain: nil, createdAt: nil)
