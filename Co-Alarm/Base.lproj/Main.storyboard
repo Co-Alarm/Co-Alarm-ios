@@ -111,7 +111,7 @@
             </objects>
             <point key="canvasLocation" x="1957.9710144927537" y="801.5625"/>
         </scene>
-        <!--Item-->
+        <!--Bookmark Table View Controller-->
         <scene sceneID="KkW-8h-Cxm">
             <objects>
                 <tableViewController id="DhW-j7-Wiv" customClass="BookmarkTableViewController" customModule="Co_Alarm" customModuleProvider="target" sceneMemberID="viewController">
@@ -134,7 +134,7 @@
                             <outlet property="delegate" destination="DhW-j7-Wiv" id="5Ld-Te-hVz"/>
                         </connections>
                     </tableView>
-                    <tabBarItem key="tabBarItem" title="Item" id="M3z-Wr-XeP"/>
+                    <tabBarItem key="tabBarItem" systemItem="bookmarks" id="M3z-Wr-XeP"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="79W-C1-PRF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
