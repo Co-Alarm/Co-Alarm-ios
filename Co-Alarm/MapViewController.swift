@@ -49,13 +49,13 @@ class MapViewController: UIViewController {
             if let stores = stores {
                 for store in stores {
                     DispatchQueue.main.async {
-                        self.setAnnotation(lat: store.lat, lng: store.lng, name: store.name, remain: store.remain ?? "null")
+                        self.setAnnotation(lat: store.lat, lng: store.lng, name: store.name, remain: store.remain ?? "null", addr: store.addr)
                     }
                 }
             } else {
-                let storeErrorAlert = UIAlertController(title:"오류", message: "약국 데이터 수집 오류", preferredStyle: .alert)
-                storeErrorAlert.addAction(UIAlertAction(title: "확인", style: .default))
                 DispatchQueue.main.async {
+                    let storeErrorAlert = UIAlertController(title:"오류", message: "약국 데이터 수집 오류", preferredStyle: .alert)
+                    storeErrorAlert.addAction(UIAlertAction(title: "확인", style: .default))
                     self.present(storeErrorAlert, animated: true, completion: nil)
                     print("parsing store error")
                 }
@@ -65,24 +65,31 @@ class MapViewController: UIViewController {
     }
     
     //mapView에 annotation을 추가하는 함수
-    func setAnnotation(lat: CLLocationDegrees, lng: CLLocationDegrees, name: String, remain: String) {
-        let annotation = MKPointAnnotation()
+    func setAnnotation(lat: CLLocationDegrees, lng: CLLocationDegrees, name: String, remain: String, addr: String) {
+        let annotation = CustomPointAnnotation()
         annotation.coordinate.latitude = lat
         annotation.coordinate.longitude = lng
         annotation.title = name
+        annotation.addr = addr
         switch remain {
         case "plenty":
             annotation.subtitle = "100개 이상"
+            annotation.imageName = "green"
         case "some":
             annotation.subtitle = "30개 이상 100개 미만"
+            annotation.imageName = "yellow"
         case "few":
             annotation.subtitle = "2개 이상 30개 미만"
+            annotation.imageName = "red"
         case "empty":
             annotation.subtitle = "1개 이하"
+            annotation.imageName = "gray"
         case "break":
             annotation.subtitle = "판매중지"
+            annotation.imageName = "gray"
         case "null":
             annotation.subtitle = "정보 없음"
+            annotation.imageName = ""
         default:
             break
         }
@@ -135,21 +142,11 @@ extension MapViewController: MKMapViewDelegate {
         if annotation is MKUserLocation {
             return nil
         } else if annotation is MKPointAnnotation{
-            switch annotation.subtitle {
-            case "100개 이상":
-                annotationView.image = UIImage(imageLiteralResourceName: "green")
-            case "30개 이상 100개 미만":
-                annotationView.image = UIImage(imageLiteralResourceName: "yellow")
-            case "2개 이상 30개 미만":
-                annotationView.image = UIImage(imageLiteralResourceName: "red")
-            case "1개 이하":
-                annotationView.image = UIImage(imageLiteralResourceName: "gray")
-            case "판매중지":
-                annotationView.image = UIImage(imageLiteralResourceName: "gray")
-            default:
-                break
+            //CustomPointAnnotation 인스턴스로 currentAnno 만듬
+            let currentAnno = annotation as! CustomPointAnnotation
+            if(currentAnno.imageName != "") {
+                annotationView.image = UIImage(imageLiteralResourceName: currentAnno.imageName)
             }
-            
             return annotationView
         } else {
             return nil
@@ -157,9 +154,8 @@ extension MapViewController: MKMapViewDelegate {
     }
     //annotationView안의 버튼이 눌러졌을 때 실행되는 함수
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        let anno = view.annotation!
-        let bookmarkStore = Store(name: anno.title!!, lat: anno.coordinate.latitude, lng: anno.coordinate.longitude, stockAt: nil, remain: nil, createdAt: nil)
-        
+        let anno = view.annotation! as! CustomPointAnnotation
+        let bookmarkStore = Store(name: anno.title!, addr: anno.addr, lat: anno.coordinate.latitude, lng: anno.coordinate.longitude, stockAt: nil, remain: nil, createdAt: nil)
         if var alreadyExist = FileController.loadBookmarkedStores() {
             let hadSame = alreadyExist.contains{$0.name == bookmarkStore.name}
             if !hadSame {
@@ -180,15 +176,13 @@ extension MapViewController: UITextFieldDelegate {
         if let addr = textField.text, addr != "" {
             NetworkController.sharedInstance.fetchGeoCode(addr: addr) { (addr) in
                 if let addr = addr {
-                    print(Double(addr.y)!)
-                    print(Double(addr.x)!)
                     DispatchQueue.main.async {
                         self.presentStores(lat: Double(addr.y)!, lng:  Double(addr.x)!)
                     }
                 } else {
-                    let geocodeErrorAlert = UIAlertController(title: "오류", message: "지역명이 잘못되었습니다.", preferredStyle: .alert)
-                    geocodeErrorAlert.addAction(UIAlertAction(title: "확인", style: .default))
                     DispatchQueue.main.async {
+                        let geocodeErrorAlert = UIAlertController(title: "오류", message: "지역명이 잘못되었습니다.", preferredStyle: .alert)
+                        geocodeErrorAlert.addAction(UIAlertAction(title: "확인", style: .default))
                         self.present(geocodeErrorAlert, animated: true, completion: nil)
                         print("parsing geocode error")
                     }
@@ -200,4 +194,10 @@ extension MapViewController: UITextFieldDelegate {
         return true
     }
 
+}
+
+//MKPointAnnotation 객체에 주소와 이미지 파일 이름을 담기 위해 자식클래스를 만듬
+class CustomPointAnnotation: MKPointAnnotation {
+    var addr: String = ""
+    var imageName: String = ""
 }

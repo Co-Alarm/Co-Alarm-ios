@@ -10,6 +10,7 @@ import Foundation
 
 struct Store: Codable {
     let name: String
+    let addr: String
     let lat: Double
     let lng: Double
     let stockAt: String?
@@ -17,6 +18,7 @@ struct Store: Codable {
     let createdAt: String?
     enum CodingKeys: String, CodingKey {
         case name
+        case addr
         case lat
         case lng
         case stockAt = "stock_at"

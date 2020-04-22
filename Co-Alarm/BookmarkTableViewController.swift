@@ -35,8 +35,7 @@ class BookmarkTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "bookmark", for: indexPath)
         cell.textLabel?.text = bookmarkedStores[indexPath.row].name
-        // Configure the cell...
-
+        cell.detailTextLabel?.text = bookmarkedStores[indexPath.row].addr
         return cell
     }
     
