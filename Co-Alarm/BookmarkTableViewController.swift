@@ -11,6 +11,7 @@ import UIKit
 class BookmarkTableViewController: UITableViewController {
 
     var bookmarkedStores: [Store] = []
+    let vc = MapViewController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,9 +54,13 @@ class BookmarkTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
+            let deletedStore = bookmarkedStores[indexPath.row]
             bookmarkedStores.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
             FileController.saveBookmarkedStores(bookmarkedStores)
+            
+            //즐겨찾기된 약국을 지울 때 deleteBookmark라는 notification을 post
+            NotificationCenter.default.post(name: Notification.Name("deleteBookmark"), object: nil, userInfo: ["deletedStore" : deletedStore])
         }
     }
     
@@ -89,3 +94,4 @@ class BookmarkTableViewController: UITableViewController {
     */
 
 }
+

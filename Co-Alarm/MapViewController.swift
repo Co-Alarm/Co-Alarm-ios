@@ -27,7 +27,23 @@ class MapViewController: UIViewController {
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
+        
+        //BookmarkTableViewController에서 즐겨찾기된 약국을 지우는 걸 보고있는 옵저버 생성
+        NotificationCenter.default.addObserver(self, selector: #selector(notificationReceived(notification:)), name: Notification.Name("deleteBookmark"), object: nil)
     }
+    
+    //옵저버가 약국이 지워진 걸 확인하고 실행하는 selector 함수
+    @objc func notificationReceived(notification: Notification) {
+        guard let userInfo = notification.userInfo as? [String : Store], let deletedStore = userInfo["deletedStore"] else {return}
+        for a in mapView.annotations {
+            if a.title == deletedStore.name {
+                let v = mapView.view(for: a)
+                let btn = v?.rightCalloutAccessoryView as! UIButton
+                btn.setImage(UIImage(imageLiteralResourceName: "unfilledStar"), for: .normal)
+            }
+        }
+    }
+    
     
     //mapView의 region을 현위치로 설정하는 함수
     func myLocation(lat: CLLocationDegrees, lng: CLLocationDegrees, delta: Double) {
@@ -133,11 +149,16 @@ extension MapViewController: CLLocationManagerDelegate {
 }
 
 extension MapViewController: MKMapViewDelegate {
+    
     //custom annotationView를 생성하는 MKMapViewDelegate 함수
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "anno") ?? MKAnnotationView(annotation: annotation, reuseIdentifier: "anno")
         let rightButton = UIButton(type: .contactAdd)
-        rightButton.setImage(UIImage(imageLiteralResourceName: "unfilledStar"), for: .normal)
+        if let existBookmarks = FileController.loadBookmarkedStores() {
+            let hadSame = existBookmarks.contains{$0.name == annotation.title}
+            let btnImgName = hadSame ? "filledStar" : "unfilledStar"
+            rightButton.setImage(UIImage(imageLiteralResourceName: btnImgName), for: .normal)
+        }
         annotationView.canShowCallout = true
         annotationView.rightCalloutAccessoryView = rightButton
         if annotation is MKUserLocation {
