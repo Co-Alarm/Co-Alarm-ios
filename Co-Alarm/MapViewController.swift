@@ -137,6 +137,7 @@ extension MapViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: "anno") ?? MKAnnotationView(annotation: annotation, reuseIdentifier: "anno")
         let rightButton = UIButton(type: .contactAdd)
+        rightButton.setImage(UIImage(imageLiteralResourceName: "unfilledStar"), for: .normal)
         annotationView.canShowCallout = true
         annotationView.rightCalloutAccessoryView = rightButton
         if annotation is MKUserLocation {
@@ -154,17 +155,25 @@ extension MapViewController: MKMapViewDelegate {
     }
     //annotationView안의 버튼이 눌러졌을 때 실행되는 함수
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        
         let anno = view.annotation! as! CustomPointAnnotation
+        let annoButton = view.rightCalloutAccessoryView as! UIButton
+        
         let bookmarkStore = Store(name: anno.title!, addr: anno.addr, lat: anno.coordinate.latitude, lng: anno.coordinate.longitude, stockAt: nil, remain: nil, createdAt: nil)
-        if var alreadyExist = FileController.loadBookmarkedStores() {
-            let hadSame = alreadyExist.contains{$0.name == bookmarkStore.name}
-            if !hadSame {
-                alreadyExist.append(bookmarkStore)
-                FileController.saveBookmarkedStores(alreadyExist)
+        
+        if var existBookmarks = FileController.loadBookmarkedStores() {
+            
+            let hadSame = existBookmarks.contains{$0.name == bookmarkStore.name}
+            
+            if hadSame {
+                annoButton.setImage(UIImage(imageLiteralResourceName: "unfilledStar"), for: .normal)
+                let deletedBookmarks = existBookmarks.filter{$0.name != bookmarkStore.name}
+                FileController.saveBookmarkedStores(deletedBookmarks)
+            } else {
+                annoButton.setImage(UIImage(imageLiteralResourceName: "filledStar"), for: .normal)
+                existBookmarks.append(bookmarkStore)
+                FileController.saveBookmarkedStores(existBookmarks)
             }
-        } else {
-            let newBookmarkStores = [bookmarkStore]
-            FileController.saveBookmarkedStores(newBookmarkStores)
         }
     }
 }
