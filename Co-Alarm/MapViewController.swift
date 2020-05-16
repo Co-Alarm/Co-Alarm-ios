@@ -65,7 +65,7 @@ class MapViewController: UIViewController {
             if let stores = stores {
                 for store in stores {
                     DispatchQueue.main.async {
-                        self.setAnnotation(lat: store.lat, lng: store.lng, name: store.name, remain: store.remain ?? "null", addr: store.addr)
+                        self.setAnnotation(store: store)
                     }
                 }
             } else {
@@ -81,13 +81,16 @@ class MapViewController: UIViewController {
     }
     
     //mapView에 annotation을 추가하는 함수
-    func setAnnotation(lat: CLLocationDegrees, lng: CLLocationDegrees, name: String, remain: String, addr: String) {
+    func setAnnotation(store: Store) {
         let annotation = CustomPointAnnotation()
-        annotation.coordinate.latitude = lat
-        annotation.coordinate.longitude = lng
-        annotation.title = name
-        annotation.addr = addr
-        switch remain {
+        annotation.coordinate.latitude = store.lat
+        annotation.coordinate.longitude = store.lng
+        annotation.title = store.name
+        annotation.addr = store.addr
+        annotation.stockAt = store.stockAt
+        annotation.createdAt = store.createdAt
+        annotation.remain = store.remain
+        switch store.remain {
         case "plenty":
             annotation.subtitle = "100개 이상"
             annotation.imageName = "green"
@@ -180,7 +183,7 @@ extension MapViewController: MKMapViewDelegate {
         let anno = view.annotation! as! CustomPointAnnotation
         let annoButton = view.rightCalloutAccessoryView as! UIButton
         
-        let bookmarkStore = Store(name: anno.title!, addr: anno.addr, lat: anno.coordinate.latitude, lng: anno.coordinate.longitude, stockAt: nil, remain: nil, createdAt: nil)
+        let bookmarkStore = Store(name: anno.title!, addr: anno.addr, lat: anno.coordinate.latitude, lng: anno.coordinate.longitude, stockAt: anno.stockAt, remain: anno.remain, createdAt: anno.createdAt)
         
         if var existBookmarks = FileController.loadBookmarkedStores() {
             
@@ -230,4 +233,7 @@ extension MapViewController: UITextFieldDelegate {
 class CustomPointAnnotation: MKPointAnnotation {
     var addr: String = ""
     var imageName: String = ""
+    var stockAt: String? = ""
+    var createdAt: String? = ""
+    var remain: String? = ""
 }
