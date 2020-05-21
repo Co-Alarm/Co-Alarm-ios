@@ -16,12 +16,15 @@ class MapViewController: UIViewController {
 
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var searchTextField: UITextField!
+    @IBOutlet weak var adviceButton: UIButton!
+    @IBOutlet weak var adviceView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         searchTextField.isHidden = searchTextFieldIsHidden
         searchTextField.delegate = self
         searchTextField.returnKeyType = .search
+        adviceView.layer.cornerRadius = 10
         mapView.delegate = self
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -143,6 +146,9 @@ class MapViewController: UIViewController {
     @IBAction func researchButtonTapped(_ sender: Any) {
         self.presentStores(lat: mapView.centerCoordinate.latitude, lng: mapView.centerCoordinate.longitude)
     }
+    @IBAction func adviceButtonTapped(_ sender: Any) {
+        self.adviceView.isHidden = !self.adviceView.isHidden
+    }
 }
 
 
@@ -165,6 +171,8 @@ extension MapViewController: MKMapViewDelegate {
             let hadSame = existBookmarks.contains{$0.name == annotation.title}
             let btnImgName = hadSame ? "filledStar" : "unfilledStar"
             rightButton.setImage(UIImage(imageLiteralResourceName: btnImgName), for: .normal)
+        } else { //documentDirectory에 처음 저장할 때
+            rightButton.setImage(UIImage(imageLiteralResourceName: "unfilledStar"), for: .normal)
         }
         annotationView.canShowCallout = true
         annotationView.rightCalloutAccessoryView = rightButton
@@ -202,6 +210,10 @@ extension MapViewController: MKMapViewDelegate {
                 existBookmarks.append(bookmarkStore)
                 FileController.saveBookmarkedStores(existBookmarks)
             }
+        } else { //documentDirectory에 처음 저장할 때
+            annoButton.setImage(UIImage(imageLiteralResourceName: "filledStar"), for: .normal)
+            let newBookmakrs: [Store] = [bookmarkStore]
+            FileController.saveBookmarkedStores(newBookmakrs)
         }
     }
 }
