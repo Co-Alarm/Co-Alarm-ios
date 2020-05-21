@@ -51,6 +51,7 @@ class MapViewController: UIViewController {
         let spanValue = MKCoordinateSpan(latitudeDelta: delta, longitudeDelta: delta)
         let locationRegion = MKCoordinateRegion(center: coordinateLocation, span: spanValue)
         mapView.setRegion(locationRegion, animated: true)
+        mapView.showsUserLocation = true
     }
     
     //약국을 mapView에 나타내는 함수
@@ -66,9 +67,6 @@ class MapViewController: UIViewController {
                 for store in stores {
                     DispatchQueue.main.async {
                         self.setAnnotation(store: store)
-                        if store.name == "소망약국"{
-                            print(store)
-                        }
                     }
                 }
             } else {

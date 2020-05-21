@@ -18,6 +18,7 @@ class BookmarkTableViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         if let bookmarkedStores = FileController.loadBookmarkedStores() {
+            
             self.bookmarkedStores = bookmarkedStores
             DispatchQueue.main.async {
                 self.tableView.reloadData()
