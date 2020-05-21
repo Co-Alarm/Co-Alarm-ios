@@ -66,6 +66,9 @@ class MapViewController: UIViewController {
                 for store in stores {
                     DispatchQueue.main.async {
                         self.setAnnotation(store: store)
+                        if store.name == "소망약국"{
+                            print(store)
+                        }
                     }
                 }
             } else {
@@ -82,37 +85,40 @@ class MapViewController: UIViewController {
     
     //mapView에 annotation을 추가하는 함수
     func setAnnotation(store: Store) {
-        let annotation = CustomPointAnnotation()
-        annotation.coordinate.latitude = store.lat
-        annotation.coordinate.longitude = store.lng
-        annotation.title = store.name
-        annotation.addr = store.addr
-        annotation.stockAt = store.stockAt
-        annotation.createdAt = store.createdAt
-        annotation.remain = store.remain
-        switch store.remain {
-        case "plenty":
-            annotation.subtitle = "100개 이상"
-            annotation.imageName = "green"
-        case "some":
-            annotation.subtitle = "30개 이상 100개 미만"
-            annotation.imageName = "yellow"
-        case "few":
-            annotation.subtitle = "2개 이상 30개 미만"
-            annotation.imageName = "red"
-        case "empty":
-            annotation.subtitle = "1개 이하"
-            annotation.imageName = "gray"
-        case "break":
-            annotation.subtitle = "판매중지"
-            annotation.imageName = "gray"
-        case "null":
-            annotation.subtitle = "정보 없음"
-            annotation.imageName = ""
-        default:
-            break
+        if let remain = store.remain {
+            let annotation = CustomPointAnnotation()
+            annotation.coordinate.latitude = store.lat
+            annotation.coordinate.longitude = store.lng
+            annotation.title = store.name
+            annotation.addr = store.addr
+            annotation.stockAt = store.stockAt
+            annotation.createdAt = store.createdAt
+            annotation.remain = remain
+            switch remain {
+            case "plenty":
+                annotation.subtitle = "100개 이상"
+                annotation.imageName = "green"
+            case "some":
+                annotation.subtitle = "30개 이상 100개 미만"
+                annotation.imageName = "yellow"
+            case "few":
+                annotation.subtitle = "2개 이상 30개 미만"
+                annotation.imageName = "red"
+            case "empty":
+                annotation.subtitle = "1개 이하"
+                annotation.imageName = "gray"
+            case "break":
+                annotation.subtitle = "판매중지"
+                annotation.imageName = "gray"
+            case "null":
+                annotation.subtitle = "정보 없음"
+                annotation.imageName = "gray"
+            default:
+                break
+            }
+            mapView.addAnnotation(annotation)
+
         }
-        mapView.addAnnotation(annotation)
     }
     //검색 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func searchButtonTapped(_ sender: Any) {

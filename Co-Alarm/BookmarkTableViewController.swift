@@ -11,7 +11,6 @@ import UIKit
 class BookmarkTableViewController: UITableViewController {
 
     var bookmarkedStores: [Store] = []
-    let vc = MapViewController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
