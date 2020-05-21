@@ -206,9 +206,15 @@ extension MapViewController: MKMapViewDelegate {
                 let deletedBookmarks = existBookmarks.filter{$0.name != bookmarkStore.name}
                 FileController.saveBookmarkedStores(deletedBookmarks)
             } else {
-                annoButton.setImage(UIImage(imageLiteralResourceName: "filledStar"), for: .normal)
-                existBookmarks.append(bookmarkStore)
-                FileController.saveBookmarkedStores(existBookmarks)
+                if existBookmarks.count >= 5 {
+                    let tooManyBookmarksAlert = UIAlertController(title:"", message: "즐겨찾기는 5개까지 등록 가능합니다", preferredStyle: .alert)
+                    tooManyBookmarksAlert.addAction(UIAlertAction(title: "확인", style: .default))
+                    self.present(tooManyBookmarksAlert, animated: true, completion: nil)
+                } else {
+                    annoButton.setImage(UIImage(imageLiteralResourceName: "filledStar"), for: .normal)
+                    existBookmarks.append(bookmarkStore)
+                    FileController.saveBookmarkedStores(existBookmarks)
+                }
             }
         } else { //documentDirectory에 처음 저장할 때
             annoButton.setImage(UIImage(imageLiteralResourceName: "filledStar"), for: .normal)
