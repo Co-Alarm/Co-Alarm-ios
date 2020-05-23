@@ -17,13 +17,14 @@ class MapViewController: UIViewController {
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var searchTextField: UITextField!
     @IBOutlet weak var adviceButton: UIButton!
-    @IBOutlet weak var adviceView: UIView!
+    @IBOutlet weak var adviceImageView: UIImageView!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         searchTextField.delegate = self
         searchTextField.returnKeyType = .search
-        adviceView.layer.cornerRadius = 10
+        adviceImageView.layer.cornerRadius = 5
         mapView.delegate = self
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -126,7 +127,7 @@ class MapViewController: UIViewController {
             self.searchTextField.alpha = 0.0
             self.searchTextField.isHidden = !self.searchTextField.isHidden
                         
-            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {self.searchTextField.alpha = 1.0}) { (isCompleted) in
+            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {self.searchTextField.alpha = 0.5}) { (isCompleted) in
             }
         } else {
             UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {self.searchTextField.alpha = 0.0}) { (isCompleted) in
@@ -145,14 +146,14 @@ class MapViewController: UIViewController {
     }
     //도움말 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func adviceButtonTapped(_ sender: Any) {
-        if self.adviceView.isHidden {
-            self.adviceView.alpha = 0.0
-            self.adviceView.isHidden = !self.adviceView.isHidden
-            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {self.adviceView.alpha = 1.0}) { (isCompleted) in
+        if self.adviceImageView.isHidden {
+            self.adviceImageView.alpha = 0.0
+            self.adviceImageView.isHidden = !self.adviceImageView.isHidden
+            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {self.adviceImageView.alpha = 1.0}) { (isCompleted) in
             }
         } else {
-            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {self.adviceView.alpha = 0.0}) { (isCompleted) in
-                self.adviceView.isHidden = !self.adviceView.isHidden
+            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {self.adviceImageView.alpha = 0.0}) { (isCompleted) in
+                self.adviceImageView.isHidden = !self.adviceImageView.isHidden
             }
         }
     }
