@@ -15,7 +15,7 @@ struct Store: Codable {
     let lat: Double
     let lng: Double
     let stockAt: String?
-    let remain: String?
+    var remain: String?
     let createdAt: String?
     enum CodingKeys: String, CodingKey {
         case name

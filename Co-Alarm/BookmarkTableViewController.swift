@@ -18,7 +18,17 @@ class BookmarkTableViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         if let bookmarkedStores = FileController.loadBookmarkedStores() {
-            
+            for var bookmarkedStore in bookmarkedStores {
+                NetworkController.sharedInstance.fetchStores(lat: bookmarkedStore.lat, lng: bookmarkedStore.lng, delta: 10) { (stores) in
+                    if let fetchedStores = stores {
+                        for fetchedStore in fetchedStores {
+                            if fetchedStore.name == bookmarkedStore.name {
+                                bookmarkedStore.remain = fetchedStore.remain
+                            }
+                        }
+                    }
+                }
+            }
             self.bookmarkedStores = bookmarkedStores
             DispatchQueue.main.async {
                 self.tableView.reloadData()
@@ -36,7 +46,23 @@ class BookmarkTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "bookmark", for: indexPath)
         cell.textLabel?.text = bookmarkedStores[indexPath.row].name
-        cell.detailTextLabel?.text = bookmarkedStores[indexPath.row].addr
+        switch bookmarkedStores[indexPath.row].remain {
+        case "plenty":
+            cell.detailTextLabel?.text = "100개 이상"
+        case "some":
+            cell.detailTextLabel?.text = "30개 이상 100개 미만"
+        case "few":
+            cell.detailTextLabel?.text = "2개 이상 30개 미만"
+        case "empty":
+            cell.detailTextLabel?.text = "1개 이하"
+
+        case "break":
+            cell.detailTextLabel?.text = "판매중지"
+        case "null":
+            cell.detailTextLabel?.text = "정보 없음"
+        default:
+            break
+        }
         return cell
     }
     
