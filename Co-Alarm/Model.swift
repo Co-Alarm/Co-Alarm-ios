@@ -6,7 +6,8 @@
 //  Copyright © 2020 SodaCoffee. All rights reserved.
 //
 
-import Foundation
+import UIKit
+import MapKit
 
 struct Store: Codable {
     let name: String
@@ -51,4 +52,13 @@ struct News: Codable {
     let total: Int
     let start: Int
     let items: [Article]
+}
+
+//MKPointAnnotation 객체에 주소와 이미지 파일 이름을 담기 위해 자식클래스를 만듬
+class CustomPointAnnotation: MKPointAnnotation {
+    var addr: String = ""
+    var imageName: String = ""
+    var stockAt: String? = ""
+    var createdAt: String? = ""
+    var remain: String? = ""
 }

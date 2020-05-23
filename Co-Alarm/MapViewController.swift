@@ -21,7 +21,6 @@ class MapViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        searchTextField.isHidden = searchTextFieldIsHidden
         searchTextField.delegate = self
         searchTextField.returnKeyType = .search
         adviceView.layer.cornerRadius = 10
@@ -123,17 +122,15 @@ class MapViewController: UIViewController {
     }
     //검색 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func searchButtonTapped(_ sender: Any) {
-        if searchTextFieldIsHidden {
+        if self.searchTextField.isHidden {
             self.searchTextField.alpha = 0.0
-            self.searchTextField.isHidden = false
-            searchTextFieldIsHidden = false
-            
-            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {self.searchTextField.alpha = 1.0}) { (isCompleted) in
+            self.searchTextField.isHidden = !self.searchTextField.isHidden
+                        
+            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {self.searchTextField.alpha = 1.0}) { (isCompleted) in
             }
         } else {
-            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {self.searchTextField.alpha = 0.0}) { (isCompleted) in
-                self.searchTextField.isHidden = true
-                self.searchTextFieldIsHidden = true
+            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {self.searchTextField.alpha = 0.0}) { (isCompleted) in
+                self.searchTextField.isHidden = !self.searchTextField.isHidden
             }
         }
     }
@@ -146,11 +143,22 @@ class MapViewController: UIViewController {
     @IBAction func researchButtonTapped(_ sender: Any) {
         self.presentStores(lat: mapView.centerCoordinate.latitude, lng: mapView.centerCoordinate.longitude)
     }
+    //도움말 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func adviceButtonTapped(_ sender: Any) {
-        self.adviceView.isHidden = !self.adviceView.isHidden
+        if self.adviceView.isHidden {
+            self.adviceView.alpha = 0.0
+            self.adviceView.isHidden = !self.adviceView.isHidden
+            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {self.adviceView.alpha = 1.0}) { (isCompleted) in
+            }
+        } else {
+            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {self.adviceView.alpha = 0.0}) { (isCompleted) in
+                self.adviceView.isHidden = !self.adviceView.isHidden
+            }
+        }
     }
 }
 
+// MARK: - CLLocationManagerDelegate
 
 extension MapViewController: CLLocationManagerDelegate {
     //현위치가 업데이트 되면 실행하는 CLLocationManagerDelegate 함수
@@ -160,6 +168,8 @@ extension MapViewController: CLLocationManagerDelegate {
         presentStores(lat: lat, lng: lng)
     }
 }
+
+// MARK: - MKMapViewDelegate
 
 extension MapViewController: MKMapViewDelegate {
     
@@ -224,6 +234,7 @@ extension MapViewController: MKMapViewDelegate {
     }
 }
 
+// MARK: - UITextFieldDelegate
 
 extension MapViewController: UITextFieldDelegate {
     //searchTextField에서 return 키가 눌러졌을 때 실행하는 UITextFieldDelegate 함수
@@ -249,13 +260,4 @@ extension MapViewController: UITextFieldDelegate {
         return true
     }
 
-}
-
-//MKPointAnnotation 객체에 주소와 이미지 파일 이름을 담기 위해 자식클래스를 만듬
-class CustomPointAnnotation: MKPointAnnotation {
-    var addr: String = ""
-    var imageName: String = ""
-    var stockAt: String? = ""
-    var createdAt: String? = ""
-    var remain: String? = ""
 }
