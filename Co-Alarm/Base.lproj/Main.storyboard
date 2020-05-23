@@ -146,9 +146,22 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <navigationBar key="tableHeaderView" contentMode="scaleToFill" id="OgF-4a-M9h">
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <items>
+                                <navigationItem title="즐겨찾기" id="hrt-1v-1s8">
+                                    <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="OIu-rm-XQr">
+                                        <connections>
+                                            <action selector="refreshButtonTapped:" destination="DhW-j7-Wiv" id="Kf3-Rv-p0P"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </navigationItem>
+                            </items>
+                        </navigationBar>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="bookmark" textLabel="ysR-k5-IMn" detailTextLabel="EP4-X7-kwA" style="IBUITableViewCellStyleSubtitle" id="55B-uZ-TDf">
-                                <rect key="frame" x="0.0" y="28" width="414" height="55.666667938232422"/>
+                                <rect key="frame" x="0.0" y="72" width="414" height="55.666667938232422"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="55B-uZ-TDf" id="A9F-f1-Nf0">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="55.666667938232422"/>

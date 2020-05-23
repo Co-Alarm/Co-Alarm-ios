@@ -17,25 +17,30 @@ class BookmarkTableViewController: UITableViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        if let bookmarkedStores = FileController.loadBookmarkedStores() {
-            for var bookmarkedStore in bookmarkedStores {
-                NetworkController.sharedInstance.fetchStores(lat: bookmarkedStore.lat, lng: bookmarkedStore.lng, delta: 10) { (stores) in
-                    if let fetchedStores = stores {
-                        for fetchedStore in fetchedStores {
-                            if fetchedStore.name == bookmarkedStore.name {
-                                bookmarkedStore.remain = fetchedStore.remain
-                            }
-                        }
-                    }
-                }
-            }
-            self.bookmarkedStores = bookmarkedStores
+        
+        if let tempBookmarkedStores = FileController.loadBookmarkedStores() {
             DispatchQueue.main.async {
+                self.bookmarkedStores = tempBookmarkedStores
                 self.tableView.reloadData()
             }
         }
     }
-
+    @IBAction func refreshButtonTapped(_ sender: Any) {
+        for i in 0..<bookmarkedStores.count {
+            NetworkController.sharedInstance.fetchStores(lat: self.bookmarkedStores[i].lat, lng: self.bookmarkedStores[i].lng, delta: 10) { (stores) in
+                if let fetchedStores = stores {
+                    if let fetchedStore = fetchedStores.first(where: {$0.code == self.bookmarkedStores[i].code}) {
+                        DispatchQueue.main.async {
+                            self.bookmarkedStores[i] = fetchedStore
+                            print(self.bookmarkedStores[i])
+                            self.tableView.reloadData()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     // MARK: - Table view data source
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows

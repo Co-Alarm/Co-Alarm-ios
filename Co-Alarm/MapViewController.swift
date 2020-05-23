@@ -95,6 +95,7 @@ class MapViewController: UIViewController {
             annotation.stockAt = store.stockAt
             annotation.createdAt = store.createdAt
             annotation.remain = remain
+            annotation.code = store.code
             switch remain {
             case "plenty":
                 annotation.subtitle = "100개 이상"
@@ -206,7 +207,7 @@ extension MapViewController: MKMapViewDelegate {
         let anno = view.annotation! as! CustomPointAnnotation
         let annoButton = view.rightCalloutAccessoryView as! UIButton
         
-        let bookmarkStore = Store(name: anno.title!, addr: anno.addr, lat: anno.coordinate.latitude, lng: anno.coordinate.longitude, stockAt: anno.stockAt, remain: anno.remain, createdAt: anno.createdAt)
+        let bookmarkStore = Store(code: anno.code, name: anno.title!, addr: anno.addr, lat: anno.coordinate.latitude, lng: anno.coordinate.longitude, stockAt: anno.stockAt, remain: anno.remain, createdAt: anno.createdAt)
         
         if var existBookmarks = FileController.loadBookmarkedStores() {
             

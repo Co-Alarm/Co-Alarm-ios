@@ -10,6 +10,7 @@ import UIKit
 import MapKit
 
 struct Store: Codable {
+    let code: String
     let name: String
     let addr: String
     let lat: Double
@@ -18,6 +19,7 @@ struct Store: Codable {
     var remain: String?
     let createdAt: String?
     enum CodingKeys: String, CodingKey {
+        case code
         case name
         case addr
         case lat
@@ -56,6 +58,7 @@ struct News: Codable {
 
 //MKPointAnnotation 객체에 주소와 이미지 파일 이름을 담기 위해 자식클래스를 만듬
 class CustomPointAnnotation: MKPointAnnotation {
+    var code: String = ""
     var addr: String = ""
     var imageName: String = ""
     var stockAt: String? = ""
