@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		641E1D5B244AEA5800279D82 /* BookmarkTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641E1D5A244AEA5700279D82 /* BookmarkTableViewController.swift */; };
 		641E1D5D244C6A6900279D82 /* FileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641E1D5C244C6A6900279D82 /* FileController.swift */; };
 		645705582441BDBD002115DC /* NewsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 645705572441BDBD002115DC /* NewsTableViewController.swift */; };
 		64BAAEA7243865CA00AE3351 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BAAEA6243865CA00AE3351 /* AppDelegate.swift */; };
@@ -21,7 +20,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		641E1D5A244AEA5700279D82 /* BookmarkTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkTableViewController.swift; sourceTree = "<group>"; };
 		641E1D5C244C6A6900279D82 /* FileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileController.swift; sourceTree = "<group>"; };
 		645705572441BDBD002115DC /* NewsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsTableViewController.swift; sourceTree = "<group>"; };
 		64BAAEA3243865CA00AE3351 /* Co-Alarm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Co-Alarm.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,7 +69,6 @@
 				64BAAEAC243865CA00AE3351 /* Main.storyboard */,
 				645705572441BDBD002115DC /* NewsTableViewController.swift */,
 				64BAAEBA2438665200AE3351 /* MapViewController.swift */,
-				641E1D5A244AEA5700279D82 /* BookmarkTableViewController.swift */,
 				64BAAEBC2438698300AE3351 /* Model.swift */,
 				64BAAEBE243869AD00AE3351 /* NetworkController.swift */,
 				641E1D5C244C6A6900279D82 /* FileController.swift */,
@@ -157,7 +154,6 @@
 				64BAAEA7243865CA00AE3351 /* AppDelegate.swift in Sources */,
 				645705582441BDBD002115DC /* NewsTableViewController.swift in Sources */,
 				641E1D5D244C6A6900279D82 /* FileController.swift in Sources */,
-				641E1D5B244AEA5800279D82 /* BookmarkTableViewController.swift in Sources */,
 				64BAAEBB2438665200AE3351 /* MapViewController.swift in Sources */,
 				64BAAEA9243865CA00AE3351 /* SceneDelegate.swift in Sources */,
 				64BAAEBD2438698300AE3351 /* Model.swift in Sources */,

@@ -17,14 +17,34 @@ class BookmarkTableViewController: UITableViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        
         if let tempBookmarkedStores = FileController.loadBookmarkedStores() {
+            self.bookmarkedStores = tempBookmarkedStores
             DispatchQueue.main.async {
-                self.bookmarkedStores = tempBookmarkedStores
                 self.tableView.reloadData()
             }
         }
+       }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        let group = DispatchGroup()
+        if let tempBookmarkedStores = FileController.loadBookmarkedStores() {
+            for var tempBookmarkedStore in tempBookmarkedStores {
+                group.enter()
+                NetworkController.sharedInstance.fetchStores(lat: tempBookmarkedStore.lat, lng: tempBookmarkedStore.lng, delta: 10) { (stores) in
+                    if let fetchedStores = stores, let fetchedStore = fetchedStores.first(where: {$0.code == tempBookmarkedStore.code}) {
+                        tempBookmarkedStore.remain = fetchedStore.remain
+                        print(1)
+                    }
+                    group.leave()
+                }
+            }
+            group.notify(queue: .main) {
+                print(2)
+                FileController.saveBookmarkedStores(tempBookmarkedStores)
+            }
+        }
     }
+    
     @IBAction func refreshButtonTapped(_ sender: Any) {
         for i in 0..<bookmarkedStores.count {
             NetworkController.sharedInstance.fetchStores(lat: self.bookmarkedStores[i].lat, lng: self.bookmarkedStores[i].lng, delta: 10) { (stores) in
@@ -32,7 +52,7 @@ class BookmarkTableViewController: UITableViewController {
                     if let fetchedStore = fetchedStores.first(where: {$0.code == self.bookmarkedStores[i].code}) {
                         DispatchQueue.main.async {
                             self.bookmarkedStores[i] = fetchedStore
-                            print(self.bookmarkedStores[i])
+                            FileController.saveBookmarkedStores(self.bookmarkedStores)
                             self.tableView.reloadData()
                         }
                     }

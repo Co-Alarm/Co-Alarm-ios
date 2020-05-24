@@ -13,11 +13,13 @@ class MapViewController: UIViewController {
     
     let locationManager = CLLocationManager()
     var searchTextFieldIsHidden = true
+    var bookmarkedStores: [Store] = []
 
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var searchTextField: UITextField!
     @IBOutlet weak var adviceButton: UIButton!
     @IBOutlet weak var adviceImageView: UIImageView!
+    @IBOutlet weak var bookmarkTableView: UITableView!
     
     
     override func viewDidLoad() {
@@ -25,28 +27,14 @@ class MapViewController: UIViewController {
         searchTextField.delegate = self
         searchTextField.returnKeyType = .search
         adviceImageView.layer.cornerRadius = 5
+        bookmarkTableView.layer.cornerRadius = 5
         mapView.delegate = self
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
         
-        //BookmarkTableViewController에서 즐겨찾기된 약국을 지우는 걸 보고있는 옵저버 생성
-        NotificationCenter.default.addObserver(self, selector: #selector(notificationReceived(notification:)), name: Notification.Name("deleteBookmark"), object: nil)
     }
-    
-    //옵저버가 약국이 지워진 걸 확인하고 실행하는 selector 함수
-    @objc func notificationReceived(notification: Notification) {
-        guard let userInfo = notification.userInfo as? [String : Store], let deletedStore = userInfo["deletedStore"] else {return}
-        for a in mapView.annotations {
-            if a.title == deletedStore.name {
-                let v = mapView.view(for: a)
-                let btn = v?.rightCalloutAccessoryView as! UIButton
-                btn.setImage(UIImage(imageLiteralResourceName: "unfilledStar"), for: .normal)
-            }
-        }
-    }
-    
     
     //mapView의 region을 현위치로 설정하는 함수
     func myLocation(lat: CLLocationDegrees, lng: CLLocationDegrees, delta: Double) {
@@ -122,20 +110,25 @@ class MapViewController: UIViewController {
 
         }
     }
-    //검색 버튼이 눌러졌을 때 실행되는 함수
-    @IBAction func searchButtonTapped(_ sender: Any) {
-        if self.searchTextField.isHidden {
-            self.searchTextField.alpha = 0.0
-            self.searchTextField.isHidden = !self.searchTextField.isHidden
-                        
-            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {self.searchTextField.alpha = 0.5}) { (isCompleted) in
+    
+    func animateView(view: UIView) {
+        if view.isHidden {
+            view.alpha = 0.0
+            view.isHidden = !view.isHidden
+            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {view.alpha = 1.0}) { (isCompleted) in
             }
         } else {
-            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {self.searchTextField.alpha = 0.0}) { (isCompleted) in
-                self.searchTextField.isHidden = !self.searchTextField.isHidden
+            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {view.alpha = 0.0}) { (isCompleted) in
+                view.isHidden = !view.isHidden
             }
         }
     }
+    
+    //검색 버튼이 눌러졌을 때 실행되는 함수
+    @IBAction func searchButtonTapped(_ sender: Any) {
+        animateView(view: self.searchTextField)
+    }
+
     //새로고침 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func refreshButtonTapped(_ sender: Any) {
         searchTextField.text = ""
@@ -147,15 +140,37 @@ class MapViewController: UIViewController {
     }
     //도움말 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func adviceButtonTapped(_ sender: Any) {
-        if self.adviceImageView.isHidden {
-            self.adviceImageView.alpha = 0.0
-            self.adviceImageView.isHidden = !self.adviceImageView.isHidden
-            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {self.adviceImageView.alpha = 1.0}) { (isCompleted) in
+        animateView(view: adviceImageView)
+    }
+    //즐겨찾기 버튼이 눌러졌을 때 실행되는 함수
+    @IBAction func bookmarkButtonTapped(_ sender: Any) {
+        if self.bookmarkTableView.isHidden {
+            if let tempBookmarkedStores = FileController.loadBookmarkedStores() {
+                self.bookmarkedStores = tempBookmarkedStores
+                DispatchQueue.main.async {
+                    self.bookmarkTableView.reloadData()
+                }
             }
+            animateView(view: bookmarkTableView)
         } else {
-            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {self.adviceImageView.alpha = 0.0}) { (isCompleted) in
-                self.adviceImageView.isHidden = !self.adviceImageView.isHidden
+            let group = DispatchGroup()
+            if let tempBookmarkedStores = FileController.loadBookmarkedStores() {
+                for var tempBookmarkedStore in tempBookmarkedStores {
+                    group.enter()
+                    NetworkController.sharedInstance.fetchStores(lat: tempBookmarkedStore.lat, lng: tempBookmarkedStore.lng, delta: 10) { (stores) in
+                        if let fetchedStores = stores, let fetchedStore = fetchedStores.first(where: {$0.code == tempBookmarkedStore.code}) {
+                            tempBookmarkedStore.remain = fetchedStore.remain
+                            print(1)
+                        }
+                        group.leave()
+                    }
+                }
+                group.notify(queue: .main) {
+                    print(2)
+                    FileController.saveBookmarkedStores(tempBookmarkedStores)
+                }
             }
+            animateView(view: bookmarkTableView)
         }
     }
 }
@@ -262,4 +277,49 @@ extension MapViewController: UITextFieldDelegate {
         return true
     }
 
+}
+
+// MARK: - UITableViewDelegate & UITableViewDataSource
+extension MapViewController : UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.bookmarkedStores.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "bookmark", for: indexPath)
+        cell.textLabel?.text = self.bookmarkedStores[indexPath.row].name
+        cell.detailTextLabel?.text = self.bookmarkedStores[indexPath.row].remain
+        return cell
+    }
+    // Override to support conditional editing of the table view.
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        // Return false if you do not want the specified item to be editable.
+        return true
+    }
+    
+    // Override to support editing the table view.
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            
+            // Delete the row from the data source
+            let deletedStore = bookmarkedStores[indexPath.row]
+            bookmarkedStores.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            FileController.saveBookmarkedStores(bookmarkedStores)
+            
+            for a in self.mapView.annotations {
+                if a.title == deletedStore.name {
+                    let v = mapView.view(for: a)
+                    let btn = v?.rightCalloutAccessoryView as! UIButton
+                    btn.setImage(UIImage(imageLiteralResourceName: "unfilledStar"), for: .normal)
+                }
+            }
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
+    }
+    
 }
