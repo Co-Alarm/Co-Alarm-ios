@@ -24,6 +24,7 @@ class MapViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        bookmarkTableView.rowHeight = 70
         searchTextField.delegate = self
         searchTextField.returnKeyType = .search
         adviceImageView.layer.cornerRadius = 5
@@ -111,7 +112,8 @@ class MapViewController: UIViewController {
         }
     }
     
-    func animateView(view: UIView) {
+    //view를 숨기고 보여줄 때 animation 동작하도록 하는 함수
+    func animateHideShow(view: UIView) {
         if view.isHidden {
             view.alpha = 0.0
             view.isHidden = !view.isHidden
@@ -126,7 +128,7 @@ class MapViewController: UIViewController {
     
     //검색 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func searchButtonTapped(_ sender: Any) {
-        animateView(view: self.searchTextField)
+        animateHideShow(view: self.searchTextField)
     }
 
     //새로고침 버튼이 눌러졌을 때 실행되는 함수
@@ -140,7 +142,7 @@ class MapViewController: UIViewController {
     }
     //도움말 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func adviceButtonTapped(_ sender: Any) {
-        animateView(view: adviceImageView)
+        animateHideShow(view: adviceImageView)
     }
     //즐겨찾기 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func bookmarkButtonTapped(_ sender: Any) {
@@ -151,26 +153,25 @@ class MapViewController: UIViewController {
                     self.bookmarkTableView.reloadData()
                 }
             }
-            animateView(view: bookmarkTableView)
+            animateHideShow(view: bookmarkTableView)
         } else {
             let group = DispatchGroup()
             if let tempBookmarkedStores = FileController.loadBookmarkedStores() {
                 for var tempBookmarkedStore in tempBookmarkedStores {
-                    group.enter()
+                    group.enter() //작업을 group에 추가
                     NetworkController.sharedInstance.fetchStores(lat: tempBookmarkedStore.lat, lng: tempBookmarkedStore.lng, delta: 10) { (stores) in
                         if let fetchedStores = stores, let fetchedStore = fetchedStores.first(where: {$0.code == tempBookmarkedStore.code}) {
                             tempBookmarkedStore.remain = fetchedStore.remain
-                            print(1)
                         }
-                        group.leave()
+                        group.leave() //작업을 group에서 삭제
                     }
                 }
-                group.notify(queue: .main) {
-                    print(2)
+                //group에 더 이상 작업이 없으면 실행
+                group.notify(queue: .global()) {
                     FileController.saveBookmarkedStores(tempBookmarkedStores)
                 }
             }
-            animateView(view: bookmarkTableView)
+            animateHideShow(view: bookmarkTableView)
         }
     }
 }
@@ -289,7 +290,22 @@ extension MapViewController : UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "bookmark", for: indexPath)
         cell.textLabel?.text = self.bookmarkedStores[indexPath.row].name
-        cell.detailTextLabel?.text = self.bookmarkedStores[indexPath.row].remain
+        switch bookmarkedStores[indexPath.row].remain {
+        case "plenty":
+            cell.detailTextLabel?.text = "100개 이상"
+        case "some":
+            cell.detailTextLabel?.text = "30개 이상 100개 미만"
+        case "few":
+            cell.detailTextLabel?.text = "2개 이상 30개 미만"
+        case "empty":
+            cell.detailTextLabel?.text = "1개 이하"
+        case "break":
+            cell.detailTextLabel?.text = "판매중지"
+        case "null":
+            cell.detailTextLabel?.text = "정보 없음"
+        default:
+            break
+        }
         return cell
     }
     // Override to support conditional editing of the table view.
@@ -308,6 +324,7 @@ extension MapViewController : UITableViewDelegate, UITableViewDataSource {
             tableView.deleteRows(at: [indexPath], with: .fade)
             FileController.saveBookmarkedStores(bookmarkedStores)
             
+            //삭제된 약국의 annotationView에서 채워진 별표를 빈 별표로 만든다
             for a in self.mapView.annotations {
                 if a.title == deletedStore.name {
                     let v = mapView.view(for: a)
@@ -318,8 +335,5 @@ extension MapViewController : UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
-    }
     
 }
