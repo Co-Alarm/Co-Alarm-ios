@@ -106,14 +106,13 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="7Fd-VH-hbx"/>
                                 </connections>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y6v-h4-3Ck">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y6v-h4-3Ck">
                                 <rect key="frame" x="20" y="753" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="05w-Tt-1Cd"/>
                                     <constraint firstAttribute="width" constant="40" id="eV4-SE-FkI"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="40"/>
-                                <state key="normal" title="B"/>
+                                <state key="normal" title="B" image="filledStar"/>
                                 <connections>
                                     <action selector="bookmarkButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ged-yP-mkX"/>
                                 </connections>
@@ -214,6 +213,7 @@
     <resources>
         <image name="advice" width="384" height="384"/>
         <image name="advicetable" width="1052" height="852"/>
+        <image name="filledStar" width="512" height="512"/>
         <image name="gps" width="352" height="352"/>
         <image name="search" width="384" height="384"/>
     </resources>
