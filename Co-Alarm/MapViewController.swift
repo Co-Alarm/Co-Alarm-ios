@@ -25,6 +25,8 @@ class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bookmarkTableView.rowHeight = 70
+        bookmarkTableView.refreshControl = UIRefreshControl()
+        bookmarkTableView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
         searchTextField.delegate = self
         searchTextField.returnKeyType = .search
         adviceImageView.layer.cornerRadius = 5
@@ -35,6 +37,32 @@ class MapViewController: UIViewController {
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
         
+    }
+    
+    @objc func handleRefreshControl() {
+        print("Refresh")
+        let group = DispatchGroup()
+        if let tempBookmarkedStores = FileController.loadBookmarkedStores() {
+            for var tempBookmarkedStore in tempBookmarkedStores {
+                group.enter() //작업을 group에 추가
+                NetworkController.sharedInstance.fetchStores(lat: tempBookmarkedStore.lat, lng: tempBookmarkedStore.lng, delta: 10) { (stores) in
+                    if let fetchedStores = stores, let fetchedStore = fetchedStores.first(where: {$0.code == tempBookmarkedStore.code}) {
+                        tempBookmarkedStore.remain = fetchedStore.remain
+                    }
+                    group.leave() //작업을 group에서 삭제
+                }
+            }
+            group.notify(queue: .main) {
+                print("reload")
+                self.bookmarkedStores = tempBookmarkedStores
+                self.bookmarkTableView.reloadData()
+                self.bookmarkTableView.refreshControl?.endRefreshing()
+            }
+            group.notify(queue: .global()) {
+                print("save")
+                FileController.saveBookmarkedStores(self.bookmarkedStores)
+            }
+        }
     }
     
     //mapView의 region을 현위치로 설정하는 함수
@@ -125,6 +153,7 @@ class MapViewController: UIViewController {
             }
         }
     }
+    // MARK: - @IBAction(ButtonTapped)
     
     //검색 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func searchButtonTapped(_ sender: Any) {
@@ -146,33 +175,13 @@ class MapViewController: UIViewController {
     }
     //즐겨찾기 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func bookmarkButtonTapped(_ sender: Any) {
-        if self.bookmarkTableView.isHidden {
-            if let tempBookmarkedStores = FileController.loadBookmarkedStores() {
-                self.bookmarkedStores = tempBookmarkedStores
-                DispatchQueue.main.async {
-                    self.bookmarkTableView.reloadData()
-                }
-            }
-            animateHideShow(view: bookmarkTableView)
-        } else {
-            let group = DispatchGroup()
-            if let tempBookmarkedStores = FileController.loadBookmarkedStores() {
-                for var tempBookmarkedStore in tempBookmarkedStores {
-                    group.enter() //작업을 group에 추가
-                    NetworkController.sharedInstance.fetchStores(lat: tempBookmarkedStore.lat, lng: tempBookmarkedStore.lng, delta: 10) { (stores) in
-                        if let fetchedStores = stores, let fetchedStore = fetchedStores.first(where: {$0.code == tempBookmarkedStore.code}) {
-                            tempBookmarkedStore.remain = fetchedStore.remain
-                        }
-                        group.leave() //작업을 group에서 삭제
-                    }
-                }
-                //group에 더 이상 작업이 없으면 실행
-                group.notify(queue: .global()) {
-                    FileController.saveBookmarkedStores(tempBookmarkedStores)
-                }
-            }
-            animateHideShow(view: bookmarkTableView)
-        }
+        if let tempBookmarkedStores = FileController.loadBookmarkedStores() {
+                       self.bookmarkedStores = tempBookmarkedStores
+                       DispatchQueue.main.async {
+                           self.bookmarkTableView.reloadData()
+                       }
+                   }
+        animateHideShow(view: bookmarkTableView)
     }
 }
 
