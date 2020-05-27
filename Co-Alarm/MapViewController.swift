@@ -21,16 +21,19 @@ class MapViewController: UIViewController {
     @IBOutlet weak var adviceImageView: UIImageView!
     @IBOutlet weak var bookmarkTableView: UITableView!
     
-    
+    // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         bookmarkTableView.rowHeight = 70
         bookmarkTableView.refreshControl = UIRefreshControl()
         bookmarkTableView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
+        bookmarkTableView.layer.cornerRadius = 5
+        
         searchTextField.delegate = self
         searchTextField.returnKeyType = .search
+        
         adviceImageView.layer.cornerRadius = 5
-        bookmarkTableView.layer.cornerRadius = 5
+        
         mapView.delegate = self
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -38,33 +41,7 @@ class MapViewController: UIViewController {
         locationManager.startUpdatingLocation()
         
     }
-    
-    @objc func handleRefreshControl() {
-        print("Refresh")
-        let group = DispatchGroup()
-        if let tempBookmarkedStores = FileController.loadBookmarkedStores() {
-            for var tempBookmarkedStore in tempBookmarkedStores {
-                group.enter() //작업을 group에 추가
-                NetworkController.sharedInstance.fetchStores(lat: tempBookmarkedStore.lat, lng: tempBookmarkedStore.lng, delta: 10) { (stores) in
-                    if let fetchedStores = stores, let fetchedStore = fetchedStores.first(where: {$0.code == tempBookmarkedStore.code}) {
-                        tempBookmarkedStore.remain = fetchedStore.remain
-                    }
-                    group.leave() //작업을 group에서 삭제
-                }
-            }
-            group.notify(queue: .main) {
-                print("reload")
-                self.bookmarkedStores = tempBookmarkedStores
-                self.bookmarkTableView.reloadData()
-                self.bookmarkTableView.refreshControl?.endRefreshing()
-            }
-            group.notify(queue: .global()) {
-                print("save")
-                FileController.saveBookmarkedStores(self.bookmarkedStores)
-            }
-        }
-    }
-    
+    // MARK: - myLocation
     //mapView의 region을 현위치로 설정하는 함수
     func myLocation(lat: CLLocationDegrees, lng: CLLocationDegrees, delta: Double) {
         let coordinateLocation = CLLocationCoordinate2DMake(lat, lng)
@@ -73,7 +50,7 @@ class MapViewController: UIViewController {
         mapView.setRegion(locationRegion, animated: true)
         mapView.showsUserLocation = true
     }
-    
+    // MARK: - presentStore
     //약국을 mapView에 나타내는 함수
     func presentStores(lat: Double, lng: Double) {
         DispatchQueue.main.async {
@@ -94,13 +71,12 @@ class MapViewController: UIViewController {
                     let storeErrorAlert = UIAlertController(title:"오류", message: "약국 데이터 수집 오류", preferredStyle: .alert)
                     storeErrorAlert.addAction(UIAlertAction(title: "확인", style: .default))
                     self.present(storeErrorAlert, animated: true, completion: nil)
-                    print("parsing store error")
                 }
             }
             self.locationManager.stopUpdatingLocation()
         }
     }
-    
+    // MARK: - setAnnotation
     //mapView에 annotation을 추가하는 함수
     func setAnnotation(store: Store) {
         if let remain = store.remain {
@@ -139,7 +115,7 @@ class MapViewController: UIViewController {
 
         }
     }
-    
+    // MARK: - animateHideShow
     //view를 숨기고 보여줄 때 animation 동작하도록 하는 함수
     func animateHideShow(view: UIView) {
         if view.isHidden {
@@ -183,10 +159,35 @@ class MapViewController: UIViewController {
                    }
         animateHideShow(view: bookmarkTableView)
     }
+    // MARK: - refreshControl Selector
+    @objc func handleRefreshControl() {
+        let group = DispatchGroup()
+        if var tempBookmarkedStores = FileController.loadBookmarkedStores() {
+            for i in 0..<tempBookmarkedStores.count {
+                group.enter() //작업을 DispatchGroup에 추가
+                NetworkController.sharedInstance.fetchStores(lat: tempBookmarkedStores[i].lat, lng: tempBookmarkedStores[i].lng, delta: 10) { (stores) in
+                    if let fetchedStores = stores, let fetchedStore = fetchedStores.first(where: {$0.code == tempBookmarkedStores[i].code}) {
+                        tempBookmarkedStores[i].remain = fetchedStore.remain
+                    }
+                    group.leave() //작업을 DispatchGroup에서 삭제
+                }
+            }
+            //DispatchGroup에 더 이상 작업이 없으면 main 큐에서 실행
+            group.notify(queue: .main) {
+                self.bookmarkedStores = tempBookmarkedStores
+                self.bookmarkTableView.reloadData()
+                self.bookmarkTableView.refreshControl?.endRefreshing()
+            }
+            //DispatchGroup에 더 이상 작업이 없으면 global 큐에서 실행
+            group.notify(queue: .global()) {
+                FileController.saveBookmarkedStores(tempBookmarkedStores)
+            }
+        }
+    }
 }
 
-// MARK: - CLLocationManagerDelegate
 
+// MARK: - CLLocationManagerDelegate
 extension MapViewController: CLLocationManagerDelegate {
     //현위치가 업데이트 되면 실행하는 CLLocationManagerDelegate 함수
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

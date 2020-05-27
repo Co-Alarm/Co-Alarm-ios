@@ -16,6 +16,7 @@ class NetworkController {
     let geoCodeBaseURL = URL(string: "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode")!
     let newsBaseURL = URL(string: "https://openapi.naver.com/v1/search/news.json")!
     
+    // MARK: - fetchStores
     //마스크 판매 현황 api와 통신하여 데이터를 fetch하는 함수
     func fetchStores(lat: Double, lng: Double, delta: Int, completion: @escaping ([Store]?)->Void) {
         let initialStoresURL = storeBaseURL.appendingPathComponent("storesByGeo").appendingPathComponent("json")
@@ -27,11 +28,16 @@ class NetworkController {
             if let data = data, let result: Stores = try? jsonDecoder.decode(Stores.self, from: data) {
                 completion(result.stores)
             } else {
+                if let response = response {
+                    print(response)
+                }
                 completion(nil)
             }
         }
         task.resume()
     }
+    
+    // MARK: - fetchGeoCode
     //geocode api와 통신하여 데이터를 fetch하는 함수
     func fetchGeoCode(addr: String, completion: @escaping (Address?) -> Void) {
         var components = URLComponents(url: geoCodeBaseURL, resolvingAgainstBaseURL: true)!
@@ -57,6 +63,7 @@ class NetworkController {
         task.resume()
     }
     
+    // MARK: - fetchNews
     //news api와 통신하여 데이터를 fetch하는 함수
     func fetchNews(completion: @escaping ([Article]?) -> Void) {
         var components = URLComponents(url: newsBaseURL, resolvingAgainstBaseURL: true)!
