@@ -46,6 +46,7 @@ class NewsTableViewController: UITableViewController {
     //cell을 눌렀을 때의 동작
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        //누른 cell에 해당하는 article 객체의 url
         guard let url = URL(string: self.articles[indexPath.row].link) else {return}
         //SFSafariViewController를 이용하여 기사에 대한 링크 페이지를 띄움
         let safariViewController = SFSafariViewController(url: url)

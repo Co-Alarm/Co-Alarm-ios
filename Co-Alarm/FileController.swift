@@ -15,9 +15,11 @@ class FileController {
     static let archiveURL = documentDirectory.appendingPathComponent("bookmarkStores").appendingPathExtension("plist")
     
     // MARK: - saveBookmarkedStores
-    //즐겨찾기된 약국을 저장하는 함수
+    //documentDirectory에 [Store] 저장
     static func saveBookmarkedStores(_ bookmarkedStores: [Store]) {
+        //[Store]를 암호화
         let encodedBookmarkedStores = try? PropertyListEncoder().encode(bookmarkedStores)
+        //documentDirectory에 write
         do {
             try encodedBookmarkedStores?.write(to: archiveURL, options: .noFileProtection)
         } catch {
@@ -26,9 +28,11 @@ class FileController {
     }
     
     // MARK: - loadBookmarkedStores
-    //즐겨찾기된 약국을 불러오는 함수
+    //documentDirectory에 저장된 [Store]를 load
     static func loadBookmarkedStores() -> [Store]? {
+        //documentDirectory에서 암호화된 데이터를 가져옴
         guard let codedStores = try? Data(contentsOf: archiveURL) else {return nil}
+        //복호화하여 리턴
         return try? PropertyListDecoder().decode(Array<Store>.self, from: codedStores)
     }
 }

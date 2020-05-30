@@ -204,11 +204,13 @@ class MapViewController: UIViewController {
         //지도 상의 중앙 좌표를 기준으로 presentStores 호출
         self.presentStores(lat: mapView.centerCoordinate.latitude, lng: mapView.centerCoordinate.longitude)
     }
+    
     //도움말 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func adviceButtonTapped(_ sender: Any) {
         if !bookmarkTableView.isHidden {
             animateHideShow(view: bookmarkTableView)
         }
+        //도움말 imageView를 animate
         animateHideShow(view: adviceImageView)
     }
     //즐겨찾기 버튼이 눌러졌을 때 실행되는 함수
@@ -300,25 +302,25 @@ extension MapViewController: MKMapViewDelegate {
         }
     }
     
-    //핀안의 즐겨찾기 추가 버튼이 눌러졌을 때 실행되는 함수
+    //annotationView안의 즐겨찾기 추가 버튼이 눌러졌을 때 실행되는 함수
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         
         let anno = view.annotation! as! CustomPointAnnotation
         let annoButton = view.rightCalloutAccessoryView as! UIButton
         
-        //핀 객체에 담긴 정보를 통해 즐겨찾기 테이블 뷰에 추가할 새로운 Store 객체 선언
+        //annotationView 객체에 담긴 정보를 통해 즐겨찾기 테이블 뷰에 추가할 새로운 Store 객체 선언
         let bookmarkStore = Store(code: anno.code, name: anno.title!, addr: anno.addr, lat: anno.coordinate.latitude, lng: anno.coordinate.longitude, stockAt: anno.stockAt, remain: anno.remain, createdAt: anno.createdAt)
         
-        //documentDirectory에 기존에 저장된 데이터가 존재하는지 확인
+        //documentDirectory에 기존에 저장된 데이터가 존재하는지
         if var existBookmarks = FileController.loadBookmarkedStores() {
-            
-            //
-            let hadSame = existBookmarks.contains{$0.name == bookmarkStore.name}
-            if hadSame {
+            //새로 저장할 Store가 기존에 저장된 데이터에 포함된다면 그것을 삭제
+            if existBookmarks.contains(where: {$0.name == bookmarkStore.name}) {
                 annoButton.setImage(UIImage(imageLiteralResourceName: "unfilledStar"), for: .normal)
                 let deletedBookmarks = existBookmarks.filter{$0.name != bookmarkStore.name}
                 FileController.saveBookmarkedStores(deletedBookmarks)
-            } else {
+            }
+            //그렇지 않다면 새로 저장할 Store 추가
+            else {
                 if existBookmarks.count >= 5 {
                     let tooManyBookmarksAlert = UIAlertController(title:"", message: "즐겨찾기는 5개까지 등록 가능합니다", preferredStyle: .alert)
                     tooManyBookmarksAlert.addAction(UIAlertAction(title: "확인", style: .default))
@@ -329,7 +331,9 @@ extension MapViewController: MKMapViewDelegate {
                     FileController.saveBookmarkedStores(existBookmarks)
                 }
             }
-        } else { //documentDirectory에 처음 저장할 때
+        }
+        //documentDirectory에 기존에 저장된 데이터가 존재하지 않을 경우
+        else {
             annoButton.setImage(UIImage(imageLiteralResourceName: "filledStar"), for: .normal)
             let newBookmakrs: [Store] = [bookmarkStore]
             FileController.saveBookmarkedStores(newBookmakrs)

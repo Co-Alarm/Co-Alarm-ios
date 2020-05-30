@@ -203,11 +203,6 @@
                             <constraint firstItem="fC1-0A-2qa" firstAttribute="top" secondItem="31H-FI-aTG" secondAttribute="bottom" constant="50" id="uQT-hu-4Yc"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <variation key="default">
-                            <mask key="subviews">
-                                <exclude reference="D96-0P-rcd"/>
-                            </mask>
-                        </variation>
                     </view>
                     <tabBarItem key="tabBarItem" title="지도" id="UwQ-N3-XyP"/>
                     <connections>
