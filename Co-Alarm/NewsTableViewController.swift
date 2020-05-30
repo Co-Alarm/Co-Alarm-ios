@@ -15,6 +15,7 @@ class NewsTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.tableView.rowHeight = 100
         //뉴스 api에서 데이터를 fetch
         NetworkController.sharedInstance.fetchNews { (articles) in
             if let articles = articles {
@@ -51,10 +52,6 @@ class NewsTableViewController: UITableViewController {
         present(safariViewController, animated: true, completion: nil)
     }
     
-    //cell의 높이 설정
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
-    }
 }
 
 //HTML 형식을 String 형식으로 바꿔주는 함수를 추가

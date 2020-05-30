@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Asset 4.pdf",
+      "filename" : "comma_logo (2).pdf",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -17,8 +17,5 @@
   "info" : {
     "author" : "xcode",
     "version" : 1
-  },
-  "properties" : {
-    "preserves-vector-representation" : true
   }
 }

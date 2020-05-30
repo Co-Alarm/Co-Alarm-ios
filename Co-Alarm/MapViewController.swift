@@ -14,32 +14,57 @@ class MapViewController: UIViewController {
     let locationManager = CLLocationManager()
     var searchTextFieldIsHidden = true
     var bookmarkedStores: [Store] = []
+    var menuViewIsHidden: Bool = true
 
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var searchTextField: UITextField!
     @IBOutlet weak var adviceButton: UIButton!
     @IBOutlet weak var adviceImageView: UIImageView!
     @IBOutlet weak var bookmarkTableView: UITableView!
+    @IBOutlet weak var menuView: UIView!
+    @IBOutlet weak var refreshButton: UIButton!
+    @IBOutlet weak var reSearchButton: UIButton!
     
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         bookmarkTableView.rowHeight = 70
         bookmarkTableView.refreshControl = UIRefreshControl()
         bookmarkTableView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
-        bookmarkTableView.layer.cornerRadius = 5
+        bookmarkTableView.layer.cornerRadius = 10
         
         searchTextField.delegate = self
         searchTextField.returnKeyType = .search
+        searchTextField.layer.cornerRadius = 6
+        makeShadow(view: searchTextField)
         
-        adviceImageView.layer.cornerRadius = 5
+        adviceImageView.layer.cornerRadius = 10
+        
+        refreshButton.layer.cornerRadius = 6
+        makeShadow(view: refreshButton)
+        
+        reSearchButton.layer.cornerRadius = 6
+        makeShadow(view: reSearchButton)
+        
+        menuView.layer.cornerRadius = 6
+        menuView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
+        makeShadow(view: menuView)
         
         mapView.delegate = self
+        
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
         
+    }
+    
+    func makeShadow(view: UIView) {
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOffset = CGSize(width: 0, height: 1.0)
+        view.layer.shadowOpacity = 0.2
+        view.layer.shadowRadius = 4
     }
     // MARK: - myLocation
     //mapView의 region을 현위치로 설정하는 함수
@@ -71,6 +96,9 @@ class MapViewController: UIViewController {
                     let storeErrorAlert = UIAlertController(title:"오류", message: "약국 데이터 수집 오류", preferredStyle: .alert)
                     storeErrorAlert.addAction(UIAlertAction(title: "확인", style: .default))
                     self.present(storeErrorAlert, animated: true, completion: nil)
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2.0) {
+                        storeErrorAlert.dismiss(animated: true, completion: nil)
+                    }
                 }
             }
             self.locationManager.stopUpdatingLocation()
@@ -112,7 +140,7 @@ class MapViewController: UIViewController {
                 break
             }
             mapView.addAnnotation(annotation)
-
+            
         }
     }
     // MARK: - animateHideShow
@@ -121,7 +149,7 @@ class MapViewController: UIViewController {
         if view.isHidden {
             view.alpha = 0.0
             view.isHidden = !view.isHidden
-            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {view.alpha = 1.0}) { (isCompleted) in
+            UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {view.alpha = 0.8}) { (isCompleted) in
             }
         } else {
             UIView.animate(withDuration: 0.6, delay: 0, options: .curveEaseInOut, animations: {view.alpha = 0.0}) { (isCompleted) in
@@ -129,12 +157,26 @@ class MapViewController: UIViewController {
             }
         }
     }
-    // MARK: - @IBAction(ButtonTapped)
     
-    //검색 버튼이 눌러졌을 때 실행되는 함수
-    @IBAction func searchButtonTapped(_ sender: Any) {
-        animateHideShow(view: self.searchTextField)
+    func animateMenuView(menuView: UIView) {
+        if menuViewIsHidden {
+            menuViewIsHidden = false
+            UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseIn, animations: {
+                menuView.layoutIfNeeded()
+                menuView.frame = CGRect(x: menuView.frame.origin.x-140, y: menuView.frame.origin.y, width: menuView.frame.size.width, height: menuView.frame.size.height)
+            }) { (isCompleted) in
+            }
+        } else {
+            UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseOut, animations: {
+                menuView.layoutIfNeeded()
+                menuView.frame = CGRect(x: 315, y: 639, width: 200, height: 60)
+            }) { (isCompleted) in
+                self.menuViewIsHidden = true
+            }
+        }
     }
+    
+    // MARK: - @IBAction(ButtonTapped)
 
     //새로고침 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func refreshButtonTapped(_ sender: Any) {
@@ -158,6 +200,10 @@ class MapViewController: UIViewController {
                        }
                    }
         animateHideShow(view: bookmarkTableView)
+    }
+    
+    @IBAction func menuButtonTapped(_ sender: Any) {
+        animateMenuView(menuView: self.menuView)
     }
     // MARK: - refreshControl Selector
     @objc func handleRefreshControl() {
@@ -279,20 +325,29 @@ extension MapViewController: UITextFieldDelegate {
                         geocodeErrorAlert.addAction(UIAlertAction(title: "확인", style: .default))
                         self.present(geocodeErrorAlert, animated: true, completion: nil)
                         print("parsing geocode error")
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2.0) {
+                            geocodeErrorAlert.dismiss(animated: true, completion: nil)
+                        }
                     }
                 }
             }
         }
-        textField.text = ""
         self.view.endEditing(true)
         return true
     }
-
+    //textField 다시 누르면 text 비우기
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        textField.text = ""
+        return true
+    }
+    //화면을 터치하면 키보드 내려가도록
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
 }
 
 // MARK: - UITableViewDelegate & UITableViewDataSource
 extension MapViewController : UITableViewDelegate, UITableViewDataSource {
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.bookmarkedStores.count
     }
