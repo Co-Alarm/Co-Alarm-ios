@@ -51,6 +51,11 @@ class MapViewController: UIViewController {
         makeShadow(view: menuView)
         
         mapView.delegate = self
+        mapView.showsCompass = false
+        let compassButton = MKCompassButton(mapView: mapView)
+        compassButton.frame.origin = CGPoint(x: 30, y: 128)
+        compassButton.compassVisibility = .adaptive
+        view.addSubview(compassButton)
         
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -314,6 +319,7 @@ extension MapViewController: MKMapViewDelegate {
             FileController.saveBookmarkedStores(newBookmakrs)
         }
     }
+    
 }
 
 // MARK: - UITextFieldDelegate
