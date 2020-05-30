@@ -28,7 +28,7 @@ class MapViewController: UIViewController {
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print(menuView.frame)
         bookmarkTableView.rowHeight = 70
         bookmarkTableView.refreshControl = UIRefreshControl()
         bookmarkTableView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
@@ -157,19 +157,19 @@ class MapViewController: UIViewController {
             }
         }
     }
-    
+    // MARK: - animateMenu
     func animateMenuView(menuView: UIView) {
         if menuViewIsHidden {
             menuViewIsHidden = false
             UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseIn, animations: {
                 menuView.layoutIfNeeded()
-                menuView.frame = CGRect(x: menuView.frame.origin.x-140, y: menuView.frame.origin.y, width: menuView.frame.size.width, height: menuView.frame.size.height)
+                menuView.frame = CGRect(x: menuView.frame.origin.x-190, y: menuView.frame.origin.y, width: menuView.frame.size.width, height: menuView.frame.size.height)
             }) { (isCompleted) in
             }
         } else {
             UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseOut, animations: {
                 menuView.layoutIfNeeded()
-                menuView.frame = CGRect(x: 315, y: 639, width: 200, height: 60)
+                menuView.frame = CGRect(x: 315, y: 658, width: 250, height: 60)
             }) { (isCompleted) in
                 self.menuViewIsHidden = true
             }
@@ -205,6 +205,7 @@ class MapViewController: UIViewController {
     @IBAction func menuButtonTapped(_ sender: Any) {
         animateMenuView(menuView: self.menuView)
     }
+    
     // MARK: - refreshControl Selector
     @objc func handleRefreshControl() {
         let group = DispatchGroup()
@@ -402,3 +403,4 @@ extension MapViewController : UITableViewDelegate, UITableViewDataSource {
     
     
 }
+
