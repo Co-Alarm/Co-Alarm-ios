@@ -28,7 +28,6 @@ class MapViewController: UIViewController {
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(menuView.frame)
         bookmarkTableView.rowHeight = 70
         bookmarkTableView.refreshControl = UIRefreshControl()
         bookmarkTableView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
@@ -60,6 +59,7 @@ class MapViewController: UIViewController {
         
     }
     
+    // MARK: - makeShadow
     func makeShadow(view: UIView) {
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOffset = CGSize(width: 0, height: 1.0)
@@ -158,6 +158,7 @@ class MapViewController: UIViewController {
         }
     }
     // MARK: - animateMenu
+    //menu animation
     func animateMenuView(menuView: UIView) {
         if menuViewIsHidden {
             menuViewIsHidden = false
@@ -189,6 +190,9 @@ class MapViewController: UIViewController {
     }
     //도움말 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func adviceButtonTapped(_ sender: Any) {
+        if !bookmarkTableView.isHidden {
+            animateHideShow(view: bookmarkTableView)
+        }
         animateHideShow(view: adviceImageView)
     }
     //즐겨찾기 버튼이 눌러졌을 때 실행되는 함수
@@ -199,9 +203,12 @@ class MapViewController: UIViewController {
                            self.bookmarkTableView.reloadData()
                        }
                    }
+        if !adviceImageView.isHidden {
+            animateHideShow(view: adviceImageView)
+        }
         animateHideShow(view: bookmarkTableView)
     }
-    
+    //메뉴 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func menuButtonTapped(_ sender: Any) {
         animateMenuView(menuView: self.menuView)
     }
