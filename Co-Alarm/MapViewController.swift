@@ -11,6 +11,7 @@ import MapKit
 
 class MapViewController: UIViewController {
     
+    //위치 관련 event handler 객체
     let locationManager = CLLocationManager()
     var searchTextFieldIsHidden = true
     var bookmarkedStores: [Store] = []
@@ -60,6 +61,7 @@ class MapViewController: UIViewController {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
+        //위치 업데이트 시작
         locationManager.startUpdatingLocation()
         
     }
@@ -80,23 +82,29 @@ class MapViewController: UIViewController {
         mapView.setRegion(locationRegion, animated: true)
         mapView.showsUserLocation = true
     }
+    
     // MARK: - presentStore
     //약국을 mapView에 나타내는 함수
     func presentStores(lat: Double, lng: Double) {
+        //기존의 핀 삭제
         DispatchQueue.main.async {
             for annotation in self.mapView.annotations {
                 self.mapView.removeAnnotation(annotation)
             }
         }
+        //지도를 현재 사용자의 위치로 설정
         myLocation(lat: lat, lng: lng, delta: 0.01)
+        //api에서 마스크 판매 정보 fetch
         NetworkController.sharedInstance.fetchStores(lat: lat, lng: lng, delta: 1000) { (stores) in
             if let stores = stores {
                 for store in stores {
                     DispatchQueue.main.async {
+                        //받아온 store 객체를 통해 핀 설정
                         self.setAnnotation(store: store)
                     }
                 }
             } else {
+                //error handling
                 DispatchQueue.main.async {
                     let storeErrorAlert = UIAlertController(title:"오류", message: "약국 데이터 수집 오류", preferredStyle: .alert)
                     storeErrorAlert.addAction(UIAlertAction(title: "확인", style: .default))
@@ -106,6 +114,7 @@ class MapViewController: UIViewController {
                     }
                 }
             }
+            //위치 업데이트 정지
             self.locationManager.stopUpdatingLocation()
         }
     }
@@ -187,10 +196,12 @@ class MapViewController: UIViewController {
     //새로고침 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func refreshButtonTapped(_ sender: Any) {
         searchTextField.text = ""
+        //위치 업데이트 시작
         self.locationManager.startUpdatingLocation()
     }
     //이 지역에서 재검색 버튼이 눌러졌을 때 실행되는 함수
     @IBAction func researchButtonTapped(_ sender: Any) {
+        //지도 상의 중앙 좌표를 기준으로 presentStores 호출
         self.presentStores(lat: mapView.centerCoordinate.latitude, lng: mapView.centerCoordinate.longitude)
     }
     //도움말 버튼이 눌러졌을 때 실행되는 함수
@@ -248,10 +259,12 @@ class MapViewController: UIViewController {
 
 // MARK: - CLLocationManagerDelegate
 extension MapViewController: CLLocationManagerDelegate {
-    //현위치가 업데이트 되면 실행하는 CLLocationManagerDelegate 함수
+    //현위치가 업데이트 되면 실행되는 CLLocationManagerDelegate 함수
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        //가장 최근의 location
         let lastLocation = locations.last
         let lat = (lastLocation?.coordinate.latitude)!, lng = (lastLocation?.coordinate.longitude)!
+        //지도 위에 핀을 나타내는 함수 호출
         presentStores(lat: lat, lng: lng)
     }
 }
@@ -286,18 +299,21 @@ extension MapViewController: MKMapViewDelegate {
             return nil
         }
     }
-    //annotationView안의 버튼이 눌러졌을 때 실행되는 함수
+    
+    //핀안의 즐겨찾기 추가 버튼이 눌러졌을 때 실행되는 함수
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         
         let anno = view.annotation! as! CustomPointAnnotation
         let annoButton = view.rightCalloutAccessoryView as! UIButton
         
+        //핀 객체에 담긴 정보를 통해 즐겨찾기 테이블 뷰에 추가할 새로운 Store 객체 선언
         let bookmarkStore = Store(code: anno.code, name: anno.title!, addr: anno.addr, lat: anno.coordinate.latitude, lng: anno.coordinate.longitude, stockAt: anno.stockAt, remain: anno.remain, createdAt: anno.createdAt)
         
+        //documentDirectory에 기존에 저장된 데이터가 존재하는지 확인
         if var existBookmarks = FileController.loadBookmarkedStores() {
             
+            //
             let hadSame = existBookmarks.contains{$0.name == bookmarkStore.name}
-            
             if hadSame {
                 annoButton.setImage(UIImage(imageLiteralResourceName: "unfilledStar"), for: .normal)
                 let deletedBookmarks = existBookmarks.filter{$0.name != bookmarkStore.name}
@@ -325,15 +341,18 @@ extension MapViewController: MKMapViewDelegate {
 // MARK: - UITextFieldDelegate
 
 extension MapViewController: UITextFieldDelegate {
-    //searchTextField에서 return 키가 눌러졌을 때 실행하는 UITextFieldDelegate 함수
+    //searchTextField에서 return 키가 눌러졌을 때 실행되는 UITextFieldDelegate 함수
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if let addr = textField.text, addr != "" {
+            //geocode api를 통해 textField에 입력된 주소를 위도, 경도로 변환
             NetworkController.sharedInstance.fetchGeoCode(addr: addr) { (addr) in
                 if let addr = addr {
                     DispatchQueue.main.async {
+                        //얻어낸 위도, 경도를 기준으로 presentStores 호출
                         self.presentStores(lat: Double(addr.y)!, lng:  Double(addr.x)!)
                     }
                 } else {
+                    //error handling
                     DispatchQueue.main.async {
                         let geocodeErrorAlert = UIAlertController(title: "오류", message: "지역명이 잘못되었습니다.", preferredStyle: .alert)
                         geocodeErrorAlert.addAction(UIAlertAction(title: "확인", style: .default))
@@ -346,6 +365,7 @@ extension MapViewController: UITextFieldDelegate {
                 }
             }
         }
+        //textField 편집 종료
         self.view.endEditing(true)
         return true
     }
@@ -367,21 +387,27 @@ extension MapViewController : UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "bookmark", for: indexPath)
-        cell.textLabel?.text = self.bookmarkedStores[indexPath.row].name
+        let cell = tableView.dequeueReusableCell(withIdentifier: "bookmark", for: indexPath) as! BookmarkTableViewCell
+        cell.storeName?.text = self.bookmarkedStores[indexPath.row].name
         switch bookmarkedStores[indexPath.row].remain {
         case "plenty":
-            cell.detailTextLabel?.text = "100개 이상"
+            cell.remainLabel?.text = "100개 이상"
+            cell.pinImageView.image = UIImage(imageLiteralResourceName: "green")
         case "some":
-            cell.detailTextLabel?.text = "30개 이상 100개 미만"
+            cell.remainLabel?.text = "30개 이상 100개 미만"
+            cell.pinImageView.image = UIImage(imageLiteralResourceName: "yellow")
         case "few":
-            cell.detailTextLabel?.text = "2개 이상 30개 미만"
+            cell.remainLabel?.text = "2개 이상 30개 미만"
+            cell.pinImageView.image = UIImage(imageLiteralResourceName: "red")
         case "empty":
-            cell.detailTextLabel?.text = "1개 이하"
+            cell.remainLabel?.text = "1개 이하"
+            cell.pinImageView.image = UIImage(imageLiteralResourceName: "gray")
         case "break":
-            cell.detailTextLabel?.text = "판매중지"
+            cell.remainLabel?.text = "판매중지"
+            cell.pinImageView.image = UIImage(imageLiteralResourceName: "gray")
         case "null":
-            cell.detailTextLabel?.text = "정보 없음"
+            cell.remainLabel?.text = "정보 없음"
+            cell.pinImageView.image = UIImage(imageLiteralResourceName: "gray")
         default:
             break
         }

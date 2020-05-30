@@ -17,7 +17,7 @@ class NetworkController {
     let newsBaseURL = URL(string: "https://openapi.naver.com/v1/search/news.json")!
     
     // MARK: - fetchStores
-    //마스크 판매 현황 api와 통신하여 데이터를 fetch하는 함수
+    //마스크 판매 현황 api에서 마스크 판매 정보를 fetch
     func fetchStores(lat: Double, lng: Double, delta: Int, completion: @escaping ([Store]?)->Void) {
         let initialStoresURL = storeBaseURL.appendingPathComponent("storesByGeo").appendingPathComponent("json")
         var components = URLComponents(url: initialStoresURL, resolvingAgainstBaseURL: true)!

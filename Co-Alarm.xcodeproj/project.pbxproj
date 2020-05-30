@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		641E1D5D244C6A6900279D82 /* FileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641E1D5C244C6A6900279D82 /* FileController.swift */; };
+		64218DC12482CE870036800A /* BookmarkTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64218DC02482CE870036800A /* BookmarkTableViewCell.swift */; };
 		645705582441BDBD002115DC /* NewsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 645705572441BDBD002115DC /* NewsTableViewController.swift */; };
 		64BAAEA7243865CA00AE3351 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BAAEA6243865CA00AE3351 /* AppDelegate.swift */; };
 		64BAAEA9243865CA00AE3351 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BAAEA8243865CA00AE3351 /* SceneDelegate.swift */; };
@@ -21,8 +22,9 @@
 
 /* Begin PBXFileReference section */
 		641E1D5C244C6A6900279D82 /* FileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileController.swift; sourceTree = "<group>"; };
+		64218DC02482CE870036800A /* BookmarkTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkTableViewCell.swift; sourceTree = "<group>"; };
 		645705572441BDBD002115DC /* NewsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsTableViewController.swift; sourceTree = "<group>"; };
-		64BAAEA3243865CA00AE3351 /* Co-Alarm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Co-Alarm.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		64BAAEA3243865CA00AE3351 /* 코마.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "코마.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		64BAAEA6243865CA00AE3351 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		64BAAEA8243865CA00AE3351 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		64BAAEAD243865CA00AE3351 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -56,7 +58,7 @@
 		64BAAEA4243865CA00AE3351 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				64BAAEA3243865CA00AE3351 /* Co-Alarm.app */,
+				64BAAEA3243865CA00AE3351 /* 코마.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -67,6 +69,7 @@
 				64BAAEA6243865CA00AE3351 /* AppDelegate.swift */,
 				64BAAEA8243865CA00AE3351 /* SceneDelegate.swift */,
 				64BAAEAC243865CA00AE3351 /* Main.storyboard */,
+				64218DC02482CE870036800A /* BookmarkTableViewCell.swift */,
 				645705572441BDBD002115DC /* NewsTableViewController.swift */,
 				64BAAEBA2438665200AE3351 /* MapViewController.swift */,
 				64BAAEBC2438698300AE3351 /* Model.swift */,
@@ -96,7 +99,7 @@
 			);
 			name = "Co-Alarm";
 			productName = "Co-Alarm";
-			productReference = 64BAAEA3243865CA00AE3351 /* Co-Alarm.app */;
+			productReference = 64BAAEA3243865CA00AE3351 /* 코마.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -157,6 +160,7 @@
 				64BAAEBB2438665200AE3351 /* MapViewController.swift in Sources */,
 				64BAAEA9243865CA00AE3351 /* SceneDelegate.swift in Sources */,
 				64BAAEBD2438698300AE3351 /* Model.swift in Sources */,
+				64218DC12482CE870036800A /* BookmarkTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -309,7 +313,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SodaCoffee.Co-Alarm";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "코마";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -328,7 +332,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SodaCoffee.Co-Alarm";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "코마";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
