@@ -28,6 +28,7 @@ class MapViewController: UIViewController {
     
     // MARK: - viewDidLoad
     override func viewDidLoad() {
+        
         super.viewDidLoad()
         bookmarkTableView.rowHeight = 70
         bookmarkTableView.refreshControl = UIRefreshControl()
